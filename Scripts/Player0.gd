@@ -1,6 +1,8 @@
 extends KinematicBody2D;
 
 #Attributes
+export(float) var scaleDownMultiplier: float;
+export(float) var scaleDownOffset: float;
 export(int) var speed : int;
 export(int) var dashMultiplier : int;
 export(float) var dashCooldown : float;
@@ -69,24 +71,28 @@ func _process(delta):
 		dash();
 	
 	if outsideOfPlatform:
-		animationSprite.scale *= 0.9999 * (1-delta); #TODO get rid of magic number
-		animationSprite.offset.y += .1 * (1-delta);
+		animationSprite.scale *= scaleDownMultiplier * (1-delta);
+		animationSprite.offset.y += scaleDownOffset * (1-delta);
 	else:
 		animationSprite.scale = Vector2(1, 1);
 		animationSprite.offset.y = 0;
 
 func _physics_process(_delta):
-	move_and_collide(velocity.normalized() * speed);
+	var col : KinematicCollision2D = move_and_collide(velocity.normalized() * speed);
+	
 
-func _on_Area2D_body_entered(body):
-	print_debug("Body entered: " + body.name);
+func _on_Area2D_body_entered(body : Node):
+	print_debug(body.name)
+	if body.name != "TileMap":
+		return;
 	canMove = true;
 	outsideOfPlatform = false;
 	if !fallingTimer.is_stopped():
 		fallingTimer.stop()
 
 func _on_Area2D_body_exited(body):
-	print_debug("Body exited: " + body.name);
+	if body.name != "TileMap":
+		return;
 	animationSprite.animation = "idle"; #Need falling animation
 	canMove = false;
 	outsideOfPlatform = true;
@@ -95,6 +101,8 @@ func _on_Area2D_body_exited(body):
 func _on_FallingTimer_timeout():
 	isAlive = false;
 	velocity = Vector2();
+	animationSprite.hide();
+	#TODO stuff when this happens (game over / X player wins / etc)
 
 func _on_DashCooldownTimer_timeout():
 	canDash = true;
