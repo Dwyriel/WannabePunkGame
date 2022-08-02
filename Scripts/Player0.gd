@@ -1,5 +1,7 @@
 extends KinematicBody2D;
 
+#TODO make state based (dashing, falling, etc)
+
 #Attributes
 export(float) var scaleDownMultiplier: float;
 export(float) var scaleDownOffset: float;
@@ -77,12 +79,21 @@ func _process(delta):
 		animationSprite.scale = Vector2(1, 1);
 		animationSprite.offset.y = 0;
 
+var waspushed: bool = false;
+var coli : KinematicCollision2D;
 func _physics_process(_delta):
 	var col : KinematicCollision2D = move_and_collide(velocity.normalized() * speed);
+	if coli != null && waspushed:
+		var push = (coli.remainder * -10) + coli.collider_velocity;
+		move_and_collide(push.normalized() * 10);
+		waspushed = false;
+		coli = null;
+	if col != null:
+		waspushed = true;
+		coli = col;
 	
 
 func _on_Area2D_body_entered(body : Node):
-	print_debug(body.name)
 	if body.name != "TileMap":
 		return;
 	canMove = true;
