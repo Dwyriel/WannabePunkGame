@@ -55,7 +55,12 @@ func dash(): #TODO make an actual dash, not teleport
 			dashDirection = velocity;
 		if dashDirection.x == 0 && dashDirection.y == 0:
 			dashDirection.x = -1 if animationSprite.flip_h else 1;
-		move_and_slide(dashDirection.normalized() * dashMultiplier);
+		var col = move_and_collide(dashDirection.normalized() * dashMultiplier);
+		if col != null: # seems to work fine but it might "proc" twice, won't be a problem after script is reworked
+			if col.collider.has_method("collided_with_other_player"):
+				var push = (col.remainder * -10) + col.collider_velocity;
+				move_and_collide(push.normalized() * 10);
+				col.collider.call("collided_with_other_player", push * -1);
 
 func _ready():
 	animationSprite = $AnimatedSprite;
@@ -81,7 +86,7 @@ func _process(delta):
 
 func _physics_process(_delta):
 	var col : KinematicCollision2D = move_and_collide(velocity.normalized() * speed);
-	if col != null:
+	if col != null: # seems to work fine but it might "proc" twice, won't be a problem after script is reworked
 		if col.collider.has_method("collided_with_other_player"):
 			var push = (col.remainder * -10) + col.collider_velocity;
 			move_and_collide(push.normalized() * 10);
