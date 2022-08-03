@@ -10,18 +10,19 @@ export(float) var scaleDownMultiplier: float;
 export(float) var scaleDownOffset: float;
 
 #Local Attributes
-enum States {Dead, Alive, Falling, Dashing, BeingPushed }
+enum States { Dead, Alive, Falling, Dashing, BeingPushed };
 var CurrentState = States.Alive;
 var animationSprite : AnimatedSprite;
 var PlayerCollider: CollisionShape2D;
 var timer : Timer;
 var fallingTimer : Timer;
 var dashCooldownTimer : Timer;
-var direction : Vector2 = Vector2();
-var canMove : bool = true;
+var direction : Vector2 = Vector2.ZERO;
+var dashDirection: Vector2 = Vector2.RIGHT;
 var canDash : bool = true;
 var outsideOfPlatform : bool = false;
 
+#Godot Functions
 func _ready():
 	PlayerCollider = $PlayerFeetCollider;
 	animationSprite = $AnimatedSprite;
@@ -31,58 +32,6 @@ func _ready():
 	PlayerCollider.disabled = false;
 	animationSprite.animation = GlobalVariables.idleAnim;
 	animationSprite.play();
-	
-func setDirection():
-	direction = Vector2();
-	if Input.is_action_pressed("ui_right"):
-		direction.x += 1;
-	if Input.is_action_pressed("ui_left"):
-		direction.x -= 1;
-	if Input.is_action_pressed("ui_down"):
-		direction.y += 1;
-	if Input.is_action_pressed("ui_up"):
-		direction.y -= 1;
-
-func setAnimation():
-	if direction.x != 0:
-		animationSprite.flip_h = direction.x < 0;
-		animationSprite.animation = GlobalVariables.movingAnim;
-	elif direction.y != 0:
-		animationSprite.animation = GlobalVariables.movingAnim;
-	else:
-		animationSprite.animation = GlobalVariables.idleAnim;
-
-func dash(): #TODO make an actual dash, not teleport
-		canDash = false;
-		dashCooldownTimer.start(dashCooldown);
-		var dashDirection: Vector2 = direction;
-		if dashDirection.x == 0 && dashDirection.y == 0:
-			dashDirection.x = -1 if animationSprite.flip_h else 1;
-		var col = move_and_collide(dashDirection.normalized() * dashMultiplier);
-		if col != null: # seems to work fine but it might "proc" twice, won't be a problem after script is reworked
-			if col.collider.has_method("collided_with_other_player"):
-				var push = (col.remainder * -10) + col.collider_velocity;
-				move_and_collide(push.normalized() * GlobalVariables.PushBackFromTouchkMultiplier);
-				col.collider.call("collided_with_other_player", push * -1, true);
-
-func processStateAlive(delta: float):
-	setDirection();
-	setAnimation();
-	if Input.is_action_pressed(GlobalVariables.dashInput) && canDash:
-		dash();
-	if outsideOfPlatform:
-		switchStateToFalling();
-		
-
-func processStateFalling(delta: float):
-	setDirection();
-	if Input.is_action_pressed(GlobalVariables.dashInput) && canDash:
-		dash();
-	direction = Vector2.ZERO;
-	animationSprite.scale *= scaleDownMultiplier * (1-delta);
-	animationSprite.offset.y += scaleDownOffset * (1-delta);
-	if !outsideOfPlatform:
-		switchStateToAlive();
 
 func _process(delta):
 	match CurrentState:
@@ -94,13 +43,20 @@ func _process(delta):
 			return;
 
 func _physics_process(_delta):
-	var col : KinematicCollision2D = move_and_collide(direction.normalized() * speed);
-	if col != null: # seems to work fine but it might "proc" twice, won't be a problem after script is reworked
-		if col.collider.has_method("collided_with_other_player"):
-			var push = (col.remainder * -10) + col.collider_velocity;
-			move_and_collide(push.normalized() * 10);
-			col.collider.call("collided_with_other_player", push * -1);
+	match CurrentState:
+		States.Alive: #TODO rework
+			var col : KinematicCollision2D = move_and_collide(direction.normalized() * speed);
+			if col != null: # seems to work fine but it might "proc" twice, won't be a problem after script is reworked
+				if col.collider.has_method("collided_with_other_player"):
+					var push = (col.remainder * -10) + col.collider_velocity;
+					move_and_collide(push.normalized() * 10);
+					col.collider.call("collided_with_other_player", push * -1);
+		States.Dashing:
+			pass; #TODO push in some dir
+		States.BeingPushed:
+			pass; #TODO push in some dir
 
+#Event Functions
 func _on_Area2D_body_entered(body : Node):
 	if body.name != "TileMap":
 		return;
@@ -119,24 +75,70 @@ func _on_FallingTimer_timeout():
 
 func _on_DashCooldownTimer_timeout():
 	canDash = true;
-	
-func collided_with_other_player(obj: Vector2, FromDash = false):
+
+func _on_Timer_timeout():
+	validadePosition();
+
+func collided_with_other_player(obj: Vector2, FromDash = false):#TODO rework
 	move_and_collide(obj.normalized() * (GlobalVariables.PushBackFromTouchkMultiplier if !FromDash else GlobalVariables.PushBackFromDashMultiplier));
 
-func checkAndSetIfNotOnPlatform():
+#Functions
+func validadePosition():
 	if outsideOfPlatform:
 		switchStateToFalling();
 	elif !outsideOfPlatform:
 		switchStateToAlive();
 
-func _on_Timer_timeout():
-	match CurrentState:
-		States.Dashing:
-			checkAndSetIfNotOnPlatform();
-		States.BeingPushed:
-			checkAndSetIfNotOnPlatform();
-		_:
-			return;
+func processStateAlive(delta: float):
+	setDirection();
+	setAnimation();
+	if Input.is_action_pressed(GlobalVariables.dashInput) && canDash:
+		dash();
+	if outsideOfPlatform:
+		switchStateToFalling();
+
+func processStateFalling(delta: float):
+	setDirection();
+	if Input.is_action_pressed(GlobalVariables.dashInput) && canDash:
+		dash();
+	direction = Vector2.ZERO;
+	animationSprite.scale *= scaleDownMultiplier * (1-delta);
+	animationSprite.offset.y += scaleDownOffset * (1-delta);
+	if !outsideOfPlatform:
+		switchStateToAlive();
+
+func setDirection():
+	direction = Vector2();
+	if Input.is_action_pressed(GlobalVariables.uiRightInput):
+		direction.x += 1;
+	if Input.is_action_pressed(GlobalVariables.uiLeftInput):
+		direction.x -= 1;
+	if Input.is_action_pressed(GlobalVariables.uiDownInput):
+		direction.y += 1;
+	if Input.is_action_pressed(GlobalVariables.uiUpInput):
+		direction.y -= 1;
+
+func setAnimation():
+	if direction.x != 0:
+		animationSprite.flip_h = direction.x < 0;
+		animationSprite.animation = GlobalVariables.movingAnim;
+	elif direction.y != 0:
+		animationSprite.animation = GlobalVariables.movingAnim;
+	else:
+		animationSprite.animation = GlobalVariables.idleAnim;
+
+func dash(): #TODO make an actual dash, not teleport
+		canDash = false;
+		dashCooldownTimer.start(dashCooldown);
+		dashDirection = direction;
+		if dashDirection.x == 0 && dashDirection.y == 0:
+			dashDirection.x = -1 if animationSprite.flip_h else 1;
+		var col = move_and_collide(dashDirection.normalized() * dashMultiplier);
+		if col != null: # seems to work fine but it might "proc" twice, won't be a problem after script is reworked
+			if col.collider.has_method("collided_with_other_player"):
+				var push = (col.remainder * -10) + col.collider_velocity;
+				move_and_collide(push.normalized() * GlobalVariables.PushBackFromTouchkMultiplier);
+				col.collider.call("collided_with_other_player", push * -1, true);
 
 func switchStateToFalling():
 	CurrentState = States.Falling;

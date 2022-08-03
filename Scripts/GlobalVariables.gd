@@ -10,6 +10,10 @@ var fallingTimeBeforeDeath: float = 2;
 
 #Input String Names:
 const dashInput = "Dash";
+const uiRightInput = "ui_right";
+const uiLeftInput = "ui_left";
+const uiDownInput = "ui_down";
+const uiUpInput = "ui_up";
 
 #Animation String Names:
 const beingPushedAnim = "beingPushed";
