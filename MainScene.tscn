@@ -411,6 +411,8 @@ zoom = Vector2( 0.45, 0.45 )
 
 [node name="Player0" parent="." instance=ExtResource( 2 )]
 position = Vector2( -3, -2 )
+OtherPlayerNodePath = NodePath("../Player1")
 
 [node name="Player1" parent="." instance=ExtResource( 3 )]
 position = Vector2( 8, -2 )
+OtherPlayerNodePath = NodePath("../Player0")

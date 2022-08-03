@@ -8,10 +8,12 @@ export(int) var dashMultiplier : int;
 export(float) var dashCooldown : float;
 export(float) var scaleDownMultiplier: float;
 export(float) var scaleDownOffset: float;
+export(NodePath) var OtherPlayerNodePath;
 
 #Local Attributes
 enum States { Dead, Alive, Falling, Dashing, BeingPushed };
 var CurrentState = States.Alive;
+var otherPlayerNode: Node;
 var animationSprite : AnimatedSprite;
 var PlayerCollider: CollisionShape2D;
 var timer : Timer;
@@ -32,8 +34,10 @@ func _ready():
 	PlayerCollider.disabled = false;
 	animationSprite.animation = GlobalVariables.idleAnim;
 	animationSprite.play();
+	otherPlayerNode = get_node(OtherPlayerNodePath);
 
 func _process(delta):
+	self.z_index = 2 if position.y > otherPlayerNode.position.y else 1;
 	match CurrentState:
 		States.Alive:
 			processStateAlive(delta);
@@ -102,8 +106,8 @@ func processStateFalling(delta: float):
 	if Input.is_action_pressed(GlobalVariables.dashInput) && canDash:
 		dash();
 	direction = Vector2.ZERO;
-	animationSprite.scale *= scaleDownMultiplier * (1-delta);
-	animationSprite.offset.y += scaleDownOffset * (1-delta);
+	animationSprite.scale *= (1 - delta) * scaleDownMultiplier;
+	animationSprite.offset.y += delta * scaleDownOffset;
 	if !outsideOfPlatform:
 		switchStateToAlive();
 
