@@ -28,5 +28,5 @@ func _physics_process(_delta):
 			move_and_collide(push.normalized() * 10);
 			col.collider.call("collided_with_other_player", push * -1);
 
-func collided_with_other_player(obj: Vector2):
-	move_and_collide(obj.normalized() * 10);
+func collided_with_other_player(obj: Vector2, FromDash = false):
+	move_and_collide(obj.normalized() * (GlobalVariables.PushBackFromTouchkMultiplier if !FromDash else GlobalVariables.PushBackFromDashMultiplier));
