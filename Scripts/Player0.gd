@@ -79,19 +79,13 @@ func _process(delta):
 		animationSprite.scale = Vector2(1, 1);
 		animationSprite.offset.y = 0;
 
-var waspushed: bool = false;
-var coli : KinematicCollision2D;
 func _physics_process(_delta):
 	var col : KinematicCollision2D = move_and_collide(velocity.normalized() * speed);
-	if coli != null && waspushed:
-		var push = (coli.remainder * -10) + coli.collider_velocity;
-		move_and_collide(push.normalized() * 10);
-		waspushed = false;
-		coli = null;
 	if col != null:
-		waspushed = true;
-		coli = col;
-	
+		if col.collider.has_method("collided_with_other_player"):
+			var push = (col.remainder * -10) + col.collider_velocity;
+			move_and_collide(push.normalized() * 10);
+			col.collider.call("collided_with_other_player", push * -1);
 
 func _on_Area2D_body_entered(body : Node):
 	if body.name != "TileMap":
@@ -117,3 +111,6 @@ func _on_FallingTimer_timeout():
 
 func _on_DashCooldownTimer_timeout():
 	canDash = true;
+	
+func collided_with_other_player(obj: Vector2):
+	move_and_collide(obj.normalized() * 10);
