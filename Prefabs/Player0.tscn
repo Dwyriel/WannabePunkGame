@@ -12,8 +12,8 @@ extents = Vector2( 2.5, 2.5 )
 [node name="Player0" type="KinematicBody2D"]
 collision/safe_margin = 0.01
 script = ExtResource( 2 )
-speed = 1
-dashMultiplier = 20
+speed = 60
+dashMultiplier = 150
 dashCooldown = 2.0
 scaleDownMultiplier = 1.003
 scaleDownOffset = 9.0

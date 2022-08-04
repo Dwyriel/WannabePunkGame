@@ -1,7 +1,5 @@
 extends KinematicBody2D;
 
-#TODO make state based (dashing, falling, etc)
-
 #Export Attributes
 export(int) var speed : int;
 export(int) var dashMultiplier : int;
@@ -21,8 +19,10 @@ var fallingTimer : Timer;
 var dashCooldownTimer : Timer;
 var direction : Vector2 = Vector2.ZERO;
 var dashDirection: Vector2 = Vector2.RIGHT;
+var pushDirection: Vector2 = Vector2.ZERO;
 var canDash : bool = true;
 var outsideOfPlatform : bool = false;
+var pushedFromDash: bool = false;
 
 #Godot Functions
 func _ready():
@@ -37,28 +37,28 @@ func _ready():
 	otherPlayerNode = get_node(OtherPlayerNodePath);
 
 func _process(delta):
-	self.z_index = 2 if position.y > otherPlayerNode.position.y else 1;
 	match CurrentState:
 		States.Alive:
 			processStateAlive(delta);
 		States.Falling:
 			processStateFalling(delta);
+		States.Dashing:
+			processStateDashing(delta);
+		States.BeingPushed:
+			processStateBeingPushed(delta);
 		_:
 			return;
 
-func _physics_process(_delta):
+func _physics_process(delta):
 	match CurrentState:
-		States.Alive: #TODO rework
-			var col : KinematicCollision2D = move_and_collide(direction.normalized() * speed);
-			if col != null: # seems to work fine but it might "proc" twice, won't be a problem after script is reworked
-				if col.collider.has_method("collided_with_other_player"):
-					var push = (col.remainder * -10) + col.collider_velocity;
-					move_and_collide(push.normalized() * 10);
-					col.collider.call("collided_with_other_player", push * -1);
+		States.Alive: 
+			physicsProcessStateAlive(delta);
 		States.Dashing:
-			pass; #TODO push in some dir
+			physicsProcessStateDashing(delta);
 		States.BeingPushed:
-			pass; #TODO push in some dir
+			physicsProcessStateBeingPushed(delta)
+		_:
+			return;
 
 #Event Functions
 func _on_Area2D_body_entered(body : Node):
@@ -83,9 +83,18 @@ func _on_DashCooldownTimer_timeout():
 func _on_Timer_timeout():
 	validadePosition();
 
-func collided_with_other_player(obj: Vector2, FromDash = false):#TODO rework
-	move_and_collide(obj.normalized() * (GlobalVariables.PushBackFromTouchkMultiplier if !FromDash else GlobalVariables.PushBackFromDashMultiplier));
+func collided_with_other_player(vec2 : Vector2, isDashing = false):
+	match CurrentState:
+		States.Dashing:
+			return;
+		_:
+			pushedFromDash = isDashing;
+			pushDirection = vec2;
+			switchStateToBeingPushed();
 
+func isDashing():
+	return CurrentState == States.Dashing;
+	
 #Functions
 func validadePosition():
 	if outsideOfPlatform:
@@ -94,6 +103,7 @@ func validadePosition():
 		switchStateToAlive();
 
 func processStateAlive(delta: float):
+	setZIndex();
 	setDirection();
 	setAnimation();
 	if Input.is_action_pressed(GlobalVariables.dashInput) && canDash:
@@ -110,6 +120,36 @@ func processStateFalling(delta: float):
 	animationSprite.offset.y += delta * scaleDownOffset;
 	if !outsideOfPlatform:
 		switchStateToAlive();
+
+func processStateDashing(delta: float):
+	setZIndex();
+
+func processStateBeingPushed(delta: float):
+	setZIndex();
+	if Input.is_action_pressed(GlobalVariables.dashInput) && canDash:
+		dash();
+
+func physicsProcessStateAlive(delta: float):
+	var col : KinematicCollision2D = move_and_collide(direction.normalized() * speed * delta);
+	if col != null: 
+		if col.collider.has_method(GlobalVariables.collidedWithOtherPlayerMethod) && col.collider.has_method(GlobalVariables.isDashingMethod):
+			var push = (col.remainder * -10) + col.collider_velocity;
+			col.collider.call(GlobalVariables.collidedWithOtherPlayerMethod, col.remainder);
+			pushDirection = col.remainder * -1;
+			pushedFromDash = col.collider.call(GlobalVariables.isDashingMethod);
+			switchStateToBeingPushed();
+
+func physicsProcessStateDashing(delta: float):
+	var col = move_and_collide(dashDirection.normalized() * dashMultiplier * delta);
+	if col != null:
+		if col.collider.has_method(GlobalVariables.collidedWithOtherPlayerMethod):
+			col.collider.call(GlobalVariables.collidedWithOtherPlayerMethod, col.remainder, true);
+
+func physicsProcessStateBeingPushed(delta: float):
+	move_and_collide(pushDirection.normalized() * (GlobalVariables.PushBackFromTouchkMultiplier if !pushedFromDash else GlobalVariables.PushBackFromDashMultiplier) * delta);
+
+func setZIndex():
+	self.z_index = GlobalVariables.zIndexInFront if position.y > otherPlayerNode.position.y else GlobalVariables.zIndexInBehind;
 
 func setDirection():
 	direction = Vector2();
@@ -131,21 +171,19 @@ func setAnimation():
 	else:
 		animationSprite.animation = GlobalVariables.idleAnim;
 
-func dash(): #TODO make an actual dash, not teleport
+func dash():
 		canDash = false;
 		dashCooldownTimer.start(dashCooldown);
 		dashDirection = direction;
 		if dashDirection.x == 0 && dashDirection.y == 0:
-			dashDirection.x = -1 if animationSprite.flip_h else 1;
-		var col = move_and_collide(dashDirection.normalized() * dashMultiplier);
-		if col != null: # seems to work fine but it might "proc" twice, won't be a problem after script is reworked
-			if col.collider.has_method("collided_with_other_player"):
-				var push = (col.remainder * -10) + col.collider_velocity;
-				move_and_collide(push.normalized() * GlobalVariables.PushBackFromTouchkMultiplier);
-				col.collider.call("collided_with_other_player", push * -1, true);
+			dashDirection.x = 1 if !animationSprite.flip_h else -1;
+		animationSprite.flip_h = dashDirection.x < 0;
+		switchStateToDashing();
 
 func switchStateToFalling():
 	CurrentState = States.Falling;
+	PlayerCollider.disabled = true;
+	self.z_index = GlobalVariables.zIndexInFalling;
 	animationSprite.animation = GlobalVariables.fallingAnim;
 	fallingTimer.start(GlobalVariables.fallingTimeBeforeDeath);
 
@@ -153,16 +191,19 @@ func switchStateToAlive():
 	CurrentState = States.Alive;
 	if !fallingTimer.is_stopped():
 		fallingTimer.stop();
+	PlayerCollider.disabled = false;
 	animationSprite.scale = Vector2.ONE;
 	animationSprite.offset.y = 0;
 
 func switchStateToDashing():
 	CurrentState = States.Dashing;
+	PlayerCollider.disabled = false;
 	animationSprite.animation = GlobalVariables.dashingAnim;
 	timer.start(GlobalVariables.dashingTime);
 
 func switchStateToBeingPushed():
 	CurrentState = States.BeingPushed;
+	PlayerCollider.disabled = false;
 	animationSprite.animation = GlobalVariables.beingPushedAnim;
 	timer.start(GlobalVariables.BeingPushedTime);
 

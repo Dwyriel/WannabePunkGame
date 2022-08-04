@@ -2,22 +2,29 @@ extends Node
 
 enum GameStates {Menu, Ingame, Gameover}
 var GameState = GameStates.Menu;
-var PushBackFromTouchkMultiplier: float = 10;
-var PushBackFromDashMultiplier: float = 20;
-var BeingPushedTime: float = .4;
-var dashingTime: float = .5;
+var PushBackFromTouchkMultiplier: float = 60;
+var PushBackFromDashMultiplier: float = 120;
+var BeingPushedTime: float = .15;
+var dashingTime: float = .2;
 var fallingTimeBeforeDeath: float = 2;
+var zIndexInFront : int = 3;
+var zIndexInBehind : int = 2;
+var zIndexInFalling : int = 1;
 
 #Input String Names:
-const dashInput = "Dash";
-const uiRightInput = "ui_right";
-const uiLeftInput = "ui_left";
-const uiDownInput = "ui_down";
-const uiUpInput = "ui_up";
+const dashInput : String = "Dash";
+const uiRightInput : String = "ui_right";
+const uiLeftInput : String = "ui_left";
+const uiDownInput : String = "ui_down";
+const uiUpInput : String = "ui_up";
 
 #Animation String Names:
 const beingPushedAnim = "beingPushed";
-const dashingAnim = "dashing";
-const idleAnim = "idle";
-const movingAnim = "moving";
-const fallingAnim = "falling";
+const dashingAnim : String = "dashing";
+const idleAnim : String = "idle";
+const movingAnim : String = "moving";
+const fallingAnim : String = "falling";
+
+#Method String Names:
+const collidedWithOtherPlayerMethod : String = "collided_with_other_player";
+const isDashingMethod : String = "isDashing"
