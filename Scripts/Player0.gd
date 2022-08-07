@@ -91,7 +91,12 @@ func _on_Timer_timeout():
 func collided_with_other_player(vec2 : Vector2, isDashing = false):
 	match CurrentState:
 		States.Dashing:
-			return;
+			if !isDashing:
+				return;
+			else:
+				pushedFromDash = isDashing;
+				pushDirection = vec2;
+				switchStateToBeingPushed();
 		_:
 			pushedFromDash = isDashing;
 			pushDirection = vec2;
@@ -107,8 +112,10 @@ func setExternalAttributes(attributes: GlobalVariables.PlayerAttributes):
 	LeftInput = attributes.LeftInput;
 	DownInput = attributes.DownInput;
 	UpInput = attributes.UpInput;
-	otherPlayerNode = attributes.OtherPlayerNode;
 	self.position = attributes.InitialPos;
+	$AnimatedSprite.frames = attributes.SpriteFrame; #needs to be set directly, as the variable "animatedSprite" is still null at this point
+	otherPlayerNode = attributes.OtherPlayerNode;
+	$AnimatedSprite.flip_h = attributes.shouldFlipSprite;
 
 func validadePosition():
 	if outsideOfPlatform:
@@ -144,20 +151,24 @@ func processStateBeingPushed(delta: float):
 		dash();
 
 func physicsProcessStateAlive(delta: float):
-	var col : KinematicCollision2D = move_and_collide(direction.normalized() * speed * delta);
-	if col != null: 
-		if col.collider.has_method(GlobalVariables.collidedWithOtherPlayerMethod) && col.collider.has_method(GlobalVariables.isDashingMethod):
-			var push = (col.remainder * -10) + col.collider_velocity;
-			col.collider.call(GlobalVariables.collidedWithOtherPlayerMethod, col.remainder);
-			pushDirection = col.remainder * -1;
-			pushedFromDash = col.collider.call(GlobalVariables.isDashingMethod);
+	var collision : KinematicCollision2D = move_and_collide(direction.normalized() * speed * delta);
+	if collision != null: 
+		if collision.collider.has_method(GlobalVariables.collidedWithOtherPlayerMethod) && collision.collider.has_method(GlobalVariables.isDashingMethod):
+			pushDirection = collision.remainder * -1;
+			pushedFromDash = collision.collider.call(GlobalVariables.isDashingMethod);
 			switchStateToBeingPushed();
+			collision.collider.call(GlobalVariables.collidedWithOtherPlayerMethod, collision.remainder);
 
 func physicsProcessStateDashing(delta: float):
-	var col = move_and_collide(dashDirection.normalized() * dashMultiplier * delta);
-	if col != null:
-		if col.collider.has_method(GlobalVariables.collidedWithOtherPlayerMethod):
-			col.collider.call(GlobalVariables.collidedWithOtherPlayerMethod, col.remainder, true);
+	var collision = move_and_collide(dashDirection.normalized() * dashMultiplier * delta);
+	if collision != null:
+		if collision.collider.has_method(GlobalVariables.collidedWithOtherPlayerMethod) && collision.collider.has_method(GlobalVariables.isDashingMethod):
+			var isDashing : bool = collision.collider.call(GlobalVariables.isDashingMethod);
+			if isDashing:
+				pushDirection = collision.remainder * -1;
+				pushedFromDash = isDashing;
+				switchStateToBeingPushed();
+			collision.collider.call(GlobalVariables.collidedWithOtherPlayerMethod, collision.remainder, true);
 
 func physicsProcessStateBeingPushed(delta: float):
 	move_and_collide(pushDirection.normalized() * (GlobalVariables.PushBackFromTouchkMultiplier if !pushedFromDash else GlobalVariables.PushBackFromDashMultiplier) * delta);

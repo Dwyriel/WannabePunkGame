@@ -16,6 +16,7 @@ config/icon="res://icon.png"
 
 [autoload]
 
+GlobalPreloads="*res://Scripts/GlobalPreloads.gd"
 GlobalVariables="*res://Scripts/GlobalVariables.gd"
 
 [display]

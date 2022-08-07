@@ -5,10 +5,10 @@ enum Characters {Green, Red, Yellow}
 var GameState = GameStates.Menu;
 var PushBackFromTouchkMultiplier: float = 60;
 var PushBackFromDashMultiplier: float = 120;
-var BeingPushedTime: float = .15;
+var BeingPushedTime: float = .15; #! Some of those can(should?) be moved to the player script, for more customization &&/|| different attributes/skills for each character
 var dashingTime: float = .2;
 var fallingTimeBeforeDeath: float = 2;
-var zIndexInFront : int = 3; #! Some of those can(should?) be moved to the player script, for more customization &&/|| different attributes/skills for each character
+var zIndexInFront : int = 3;
 var zIndexInBehind : int = 2;
 var zIndexInFalling : int = 1;
 
@@ -41,14 +41,18 @@ class PlayerAttributes:
 	var LeftInput : String;
 	var DownInput : String;
 	var UpInput : String;
-	var OtherPlayerNode: Node;
-	var InitialPos: Vector2;
+	var InitialPos : Vector2;
+	var SpriteFrame : SpriteFrames; 
+	var OtherPlayerNode : Node;
+	var shouldFlipSprite : bool;
 	
-	func _custom_init(DashInput : String, RightInput : String, LeftInput : String, DownInput : String, UpInput : String, OtherPlayerNode : Node, InitialPos : Vector2):
+	func _custom_init(DashInput : String, RightInput : String, LeftInput : String, DownInput : String, UpInput : String, InitialPos : Vector2, SpriteFrame : SpriteFrames, OtherPlayerNode : Node, shouldFlipSprite):
 		self.DashInput = DashInput;
 		self.RightInput = RightInput;
 		self.LeftInput = LeftInput;
 		self.DownInput = DownInput;
 		self.UpInput = UpInput;
-		self.OtherPlayerNode = OtherPlayerNode;
 		self.InitialPos = InitialPos;
+		self.SpriteFrame = SpriteFrame;
+		self.OtherPlayerNode = OtherPlayerNode;
+		self.shouldFlipSprite = shouldFlipSprite;
