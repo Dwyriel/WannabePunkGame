@@ -6,12 +6,10 @@ export(int) var dashMultiplier : int;
 export(float) var dashCooldown : float;
 export(float) var scaleDownMultiplier: float;
 export(float) var scaleDownOffset: float;
-export(NodePath) var OtherPlayerNodePath;
 
 #Local Attributes
 enum States { Dead, Alive, Falling, Dashing, BeingPushed };
 var CurrentState = States.Alive;
-var otherPlayerNode: Node;
 var animationSprite : AnimatedSprite;
 var PlayerCollider: CollisionShape2D;
 var timer : Timer;
@@ -24,6 +22,14 @@ var canDash : bool = true;
 var outsideOfPlatform : bool = false;
 var pushedFromDash: bool = false;
 
+#External Attributes (Comes from some other script)
+var DashInput : String;
+var RightInput : String;
+var LeftInput : String;
+var DownInput : String;
+var UpInput : String;
+var otherPlayerNode: Node;
+
 #Godot Functions
 func _ready():
 	PlayerCollider = $PlayerFeetCollider;
@@ -34,7 +40,6 @@ func _ready():
 	PlayerCollider.disabled = false;
 	animationSprite.animation = GlobalVariables.idleAnim;
 	animationSprite.play();
-	otherPlayerNode = get_node(OtherPlayerNodePath);
 
 func _process(delta):
 	match CurrentState:
@@ -94,8 +99,17 @@ func collided_with_other_player(vec2 : Vector2, isDashing = false):
 
 func isDashing():
 	return CurrentState == States.Dashing;
-	
+
 #Functions
+func setExternalAttributes(attributes: GlobalVariables.PlayerAttributes):
+	DashInput = attributes.DashInput;
+	RightInput = attributes.RightInput;
+	LeftInput = attributes.LeftInput;
+	DownInput = attributes.DownInput;
+	UpInput = attributes.UpInput;
+	otherPlayerNode = attributes.OtherPlayerNode;
+	self.position = attributes.InitialPos;
+
 func validadePosition():
 	if outsideOfPlatform:
 		switchStateToFalling();
@@ -106,14 +120,14 @@ func processStateAlive(delta: float):
 	setZIndex();
 	setDirection();
 	setAnimation();
-	if Input.is_action_pressed(GlobalVariables.dashInput) && canDash:
+	if Input.is_action_pressed(DashInput) && canDash:
 		dash();
 	if outsideOfPlatform:
 		switchStateToFalling();
 
 func processStateFalling(delta: float):
 	setDirection();
-	if Input.is_action_pressed(GlobalVariables.dashInput) && canDash:
+	if Input.is_action_pressed(DashInput) && canDash:
 		dash();
 	direction = Vector2.ZERO;
 	animationSprite.scale *= (1 - delta) * scaleDownMultiplier;
@@ -126,7 +140,7 @@ func processStateDashing(delta: float):
 
 func processStateBeingPushed(delta: float):
 	setZIndex();
-	if Input.is_action_pressed(GlobalVariables.dashInput) && canDash:
+	if Input.is_action_pressed(DashInput) && canDash:
 		dash();
 
 func physicsProcessStateAlive(delta: float):
@@ -153,13 +167,13 @@ func setZIndex():
 
 func setDirection():
 	direction = Vector2();
-	if Input.is_action_pressed(GlobalVariables.uiRightInput):
+	if Input.is_action_pressed(RightInput):
 		direction.x += 1;
-	if Input.is_action_pressed(GlobalVariables.uiLeftInput):
+	if Input.is_action_pressed(LeftInput):
 		direction.x -= 1;
-	if Input.is_action_pressed(GlobalVariables.uiDownInput):
+	if Input.is_action_pressed(DownInput):
 		direction.y += 1;
-	if Input.is_action_pressed(GlobalVariables.uiUpInput):
+	if Input.is_action_pressed(UpInput):
 		direction.y -= 1;
 
 func setAnimation():

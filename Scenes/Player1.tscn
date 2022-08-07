@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=2]
 
-[ext_resource path="res://Assets/SpriteFrame1.tres" type="SpriteFrames" id=1]
-[ext_resource path="res://Scripts/Player1.gd" type="Script" id=2]
+[ext_resource path="res://Scripts/Player0.gd" type="Script" id=1]
+[ext_resource path="res://Assets/SpriteFrame1.tres" type="SpriteFrames" id=2]
 
 [sub_resource type="RectangleShape2D" id=2]
 extents = Vector2( 2.5, 2.5 )
@@ -11,14 +11,19 @@ extents = Vector2( 2.5, 2.5 )
 
 [node name="Player1" type="KinematicBody2D"]
 collision/safe_margin = 0.01
-script = ExtResource( 2 )
+script = ExtResource( 1 )
+speed = 60
+dashMultiplier = 150
+dashCooldown = 2.0
+scaleDownMultiplier = 1.003
+scaleDownOffset = 9.0
 
 [node name="PlayerFeetCollider" type="CollisionShape2D" parent="."]
 position = Vector2( 0.5, 6.5 )
 shape = SubResource( 2 )
 
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
-frames = ExtResource( 1 )
+frames = ExtResource( 2 )
 animation = "idle"
 
 [node name="Area2D" type="Area2D" parent="."]
@@ -40,5 +45,10 @@ one_shot = true
 
 [node name="DashCooldownTimer" type="Timer" parent="."]
 
+[node name="Timer" type="Timer" parent="."]
+
+[connection signal="body_entered" from="Area2D" to="." method="_on_Area2D_body_entered"]
+[connection signal="body_exited" from="Area2D" to="." method="_on_Area2D_body_exited"]
 [connection signal="timeout" from="FallingTimer" to="." method="_on_FallingTimer_timeout"]
 [connection signal="timeout" from="DashCooldownTimer" to="." method="_on_DashCooldownTimer_timeout"]
+[connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
