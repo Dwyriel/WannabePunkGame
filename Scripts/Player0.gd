@@ -28,7 +28,7 @@ var RightInput : String;
 var LeftInput : String;
 var DownInput : String;
 var UpInput : String;
-var otherPlayerNode: Node;
+var otherPlayerNode: KinematicBody2D;
 
 #Godot Functions
 func _ready():

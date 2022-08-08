@@ -1,7 +1,7 @@
 extends Node2D
 
-var Player0: Node;
-var Player1: Node;
+var Player0: KinematicBody2D;
+var Player1: KinematicBody2D;
 
 func _ready():
 	LoadPlayer();

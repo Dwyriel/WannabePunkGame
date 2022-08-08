@@ -55,10 +55,10 @@ class PlayerAttributes:
 	var UpInput : String;
 	var InitialPos : Vector2;
 	var SpriteFrame : SpriteFrames; 
-	var OtherPlayerNode : Node;
+	var OtherPlayerNode : KinematicBody2D;
 	var shouldFlipSprite : bool;
 	
-	func _custom_init(DashInput : String, RightInput : String, LeftInput : String, DownInput : String, UpInput : String, InitialPos : Vector2, SpriteFrame : SpriteFrames, OtherPlayerNode : Node, shouldFlipSprite):
+	func _custom_init(DashInput : String, RightInput : String, LeftInput : String, DownInput : String, UpInput : String, InitialPos : Vector2, SpriteFrame : SpriteFrames, OtherPlayerNode : KinematicBody2D, shouldFlipSprite):
 		self.DashInput = DashInput;
 		self.RightInput = RightInput;
 		self.LeftInput = LeftInput;
