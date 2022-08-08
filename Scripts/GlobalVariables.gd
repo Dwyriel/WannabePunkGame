@@ -35,6 +35,18 @@ const fallingAnim : String = "falling";
 const collidedWithOtherPlayerMethod : String = "collided_with_other_player";
 const isDashingMethod : String = "isDashing"
 
+#Pallete Colors:
+const White : Color = Color("#FFF1E8");
+const Black : Color = Color("#000000");
+const Purple : Color = Color("#7E2553");
+const Pink : Color = Color("#FF77A8");
+const Brown : Color = Color("#AB5236");
+const DarkBlue : Color = Color("#1D2B53");
+const DarkGreen : Color = Color("#008751");
+const LightGrey : Color = Color("#C2C3C7");
+const LightGreen : Color = Color("#00E436");
+const LightBlue : Color = Color("#29ADFF");
+
 class PlayerAttributes:
 	var DashInput : String;
 	var RightInput : String;
