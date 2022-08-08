@@ -94,9 +94,7 @@ func collided_with_other_player(vec2 : Vector2, isDashing = false):
 			if !isDashing:
 				return;
 			else:
-				pushedFromDash = isDashing;
-				pushDirection = vec2;
-				switchStateToBeingPushed();
+				continue;
 		_:
 			pushedFromDash = isDashing;
 			pushDirection = vec2;
