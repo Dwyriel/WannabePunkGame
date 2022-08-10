@@ -18,6 +18,7 @@ config/icon="res://icon.png"
 
 GlobalPreloads="*res://Scripts/GlobalPreloads.gd"
 GlobalVariables="*res://Scripts/GlobalVariables.gd"
+SceneSwitcher="*res://Scripts/SceneSwitcher.gd"
 
 [display]
 

@@ -1,8 +1,7 @@
 extends Node
 
-enum GameStates {Menu, Ingame, Gameover}
+enum GameScenes {Menu, Game}
 enum Characters {Green, Red, Yellow}
-var GameState = GameStates.Menu;
 var PushBackFromTouchkMultiplier: float = 60;
 var PushBackFromDashMultiplier: float = 120;
 var BeingPushedTime: float = .15; #! Some of those can(should?) be moved to the player script, for more customization &&/|| different attributes/skills for each character

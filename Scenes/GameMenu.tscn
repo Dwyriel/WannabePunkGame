@@ -1,8 +1,9 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://Assets/Panque.png" type="Texture" id=1]
 [ext_resource path="res://Fonts/DoubleHomicide.ttf" type="DynamicFontData" id=2]
 [ext_resource path="res://Scenes/StartButton.gd" type="Script" id=3]
+[ext_resource path="res://Scripts/GameMenu.gd" type="Script" id=4]
 
 [sub_resource type="DynamicFontData" id=3]
 font_path = "res://Fonts/DoubleHomicide.ttf"
@@ -27,17 +28,18 @@ font_data = ExtResource( 2 )
 
 [sub_resource type="StyleBoxEmpty" id=6]
 
-[node name="Control" type="Control"]
+[node name="MainMenu" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+script = ExtResource( 4 )
 
-[node name="TextureRect" type="TextureRect" parent="."]
+[node name="Background" type="TextureRect" parent="."]
 margin_right = 1600.0
 margin_bottom = 960.0
 texture = ExtResource( 1 )
 expand = true
 
-[node name="Label" type="Label" parent="."]
+[node name="GameTitle" type="Label" parent="."]
 margin_left = 1048.0
 margin_top = 26.0
 margin_right = 1600.0
@@ -90,5 +92,12 @@ text = "Start"
 align = 1
 valign = 1
 
-[connection signal="mouse_entered" from="StartButton" to="StartButton" method="_on_StartButton_mouse_entered"]
-[connection signal="mouse_exited" from="StartButton" to="StartButton" method="_on_StartButton_mouse_exited"]
+[node name="ExitButton" type="Button" parent="."]
+margin_right = 12.0
+margin_bottom = 20.0
+
+[node name="ShadowText" type="Label" parent="ExitButton"]
+margin_right = 40.0
+margin_bottom = 14.0
+
+[connection signal="pressed" from="StartButton" to="." method="_on_StartButton_pressed"]
