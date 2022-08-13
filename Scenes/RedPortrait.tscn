@@ -1,0 +1,27 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://Assets/Outline.shader" type="Shader" id=1]
+[ext_resource path="res://RawAssets/RedPortrait.png" type="Texture" id=2]
+[ext_resource path="res://Scripts/PortraitScript.gd" type="Script" id=3]
+
+[sub_resource type="ShaderMaterial" id=1]
+shader = ExtResource( 1 )
+shader_param/lineColor = Color( 0, 0.894118, 0.211765, 1 )
+shader_param/lineThickness = null
+
+[node name="RedPortrait" type="Node2D"]
+script = ExtResource( 3 )
+
+[node name="KinematicBody2D" type="KinematicBody2D" parent="."]
+input_pickable = true
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="KinematicBody2D"]
+polygon = PoolVector2Array( -10, 15, 14, 15, 7, -8, 14, -10, 15, -15, -14, -14, -13, -9, -10, -7 )
+
+[node name="Sprite" type="Sprite" parent="."]
+material = SubResource( 1 )
+texture = ExtResource( 2 )
+
+[connection signal="input_event" from="KinematicBody2D" to="." method="_on_KinematicBody2D_input_event"]
+[connection signal="mouse_entered" from="KinematicBody2D" to="." method="_on_KinematicBody2D_mouse_entered"]
+[connection signal="mouse_exited" from="KinematicBody2D" to="." method="_on_KinematicBody2D_mouse_exited"]
