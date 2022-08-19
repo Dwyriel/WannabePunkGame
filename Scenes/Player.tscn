@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=2]
 
-[ext_resource path="res://Scripts/Player0.gd" type="Script" id=1]
+[ext_resource path="res://Scripts/PlayerScript.gd" type="Script" id=1]
 [ext_resource path="res://Assets/SpriteFrameGreen.tres" type="SpriteFrames" id=2]
 
 [sub_resource type="RectangleShape2D" id=2]

@@ -151,22 +151,22 @@ func processStateBeingPushed(delta: float):
 func physicsProcessStateAlive(delta: float):
 	var collision : KinematicCollision2D = move_and_collide(direction.normalized() * speed * delta);
 	if collision != null: 
-		if collision.collider.has_method(GlobalVariables.collidedWithOtherPlayerMethod) && collision.collider.has_method(GlobalVariables.isDashingMethod):
+		if collision.collider.has_method(GlobalVariables.methodCollidedWithOtherPlayer) && collision.collider.has_method(GlobalVariables.methodIsDashing):
 			pushDirection = collision.remainder * -1;
-			pushedFromDash = collision.collider.call(GlobalVariables.isDashingMethod);
+			pushedFromDash = collision.collider.call(GlobalVariables.methodIsDashing);
 			switchStateToBeingPushed();
-			collision.collider.call(GlobalVariables.collidedWithOtherPlayerMethod, collision.remainder);
+			collision.collider.call(GlobalVariables.methodCollidedWithOtherPlayer, collision.remainder);
 
 func physicsProcessStateDashing(delta: float):
 	var collision = move_and_collide(dashDirection.normalized() * dashMultiplier * delta);
 	if collision != null:
-		if collision.collider.has_method(GlobalVariables.collidedWithOtherPlayerMethod) && collision.collider.has_method(GlobalVariables.isDashingMethod):
-			var isDashing : bool = collision.collider.call(GlobalVariables.isDashingMethod);
+		if collision.collider.has_method(GlobalVariables.methodCollidedWithOtherPlayer) && collision.collider.has_method(GlobalVariables.methodIsDashing):
+			var isDashing : bool = collision.collider.call(GlobalVariables.methodIsDashing);
 			if isDashing:
 				pushDirection = collision.remainder * -1;
 				pushedFromDash = isDashing;
 				switchStateToBeingPushed();
-			collision.collider.call(GlobalVariables.collidedWithOtherPlayerMethod, collision.remainder, true);
+			collision.collider.call(GlobalVariables.methodCollidedWithOtherPlayer, collision.remainder, true);
 
 func physicsProcessStateBeingPushed(delta: float):
 	move_and_collide(pushDirection.normalized() * (GlobalVariables.PushBackFromTouchkMultiplier if !pushedFromDash else GlobalVariables.PushBackFromDashMultiplier) * delta);
