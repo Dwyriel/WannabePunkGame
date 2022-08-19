@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Panque.png-ecda30994a4f7ad21c31040eb5bf7f24.stex"
+path="res://.import/ReturnGrey.png-66c583fa6bdc245686beed60f007bcb9.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Panque.png"
-dest_files=[ "res://.import/Panque.png-ecda30994a4f7ad21c31040eb5bf7f24.stex" ]
+source_file="res://Buttons/ReturnGrey.png"
+dest_files=[ "res://.import/ReturnGrey.png-66c583fa6bdc245686beed60f007bcb9.stex" ]
 
 [params]
 

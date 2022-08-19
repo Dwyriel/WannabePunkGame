@@ -6,12 +6,10 @@ export(int) var dashMultiplier : int;
 export(float) var dashCooldown : float;
 export(float) var scaleDownMultiplier: float;
 export(float) var scaleDownOffset: float;
-export(NodePath) var OtherPlayerNodePath;
 
 #Local Attributes
 enum States { Dead, Alive, Falling, Dashing, BeingPushed };
 var CurrentState = States.Alive;
-var otherPlayerNode: Node;
 var animationSprite : AnimatedSprite;
 var PlayerCollider: CollisionShape2D;
 var timer : Timer;
@@ -24,6 +22,14 @@ var canDash : bool = true;
 var outsideOfPlatform : bool = false;
 var pushedFromDash: bool = false;
 
+#External Attributes (Comes from some other script)
+var DashInput : String;
+var RightInput : String;
+var LeftInput : String;
+var DownInput : String;
+var UpInput : String;
+var otherPlayerNode: KinematicBody2D;
+
 #Godot Functions
 func _ready():
 	PlayerCollider = $PlayerFeetCollider;
@@ -34,7 +40,6 @@ func _ready():
 	PlayerCollider.disabled = false;
 	animationSprite.animation = GlobalVariables.idleAnim;
 	animationSprite.play();
-	otherPlayerNode = get_node(OtherPlayerNodePath);
 
 func _process(delta):
 	match CurrentState:
@@ -86,7 +91,10 @@ func _on_Timer_timeout():
 func collided_with_other_player(vec2 : Vector2, isDashing = false):
 	match CurrentState:
 		States.Dashing:
-			return;
+			if !isDashing:
+				return;
+			else:
+				continue;
 		_:
 			pushedFromDash = isDashing;
 			pushDirection = vec2;
@@ -94,8 +102,19 @@ func collided_with_other_player(vec2 : Vector2, isDashing = false):
 
 func isDashing():
 	return CurrentState == States.Dashing;
-	
+
 #Functions
+func setExternalAttributes(attributes: GlobalVariables.PlayerAttributes):
+	DashInput = attributes.DashInput;
+	RightInput = attributes.RightInput;
+	LeftInput = attributes.LeftInput;
+	DownInput = attributes.DownInput;
+	UpInput = attributes.UpInput;
+	self.position = attributes.InitialPos;
+	$AnimatedSprite.frames = attributes.SpriteFrame; #needs to be set directly, as the variable "animatedSprite" is still null at this point
+	otherPlayerNode = attributes.OtherPlayerNode;
+	$AnimatedSprite.flip_h = attributes.shouldFlipSprite;
+
 func validadePosition():
 	if outsideOfPlatform:
 		switchStateToFalling();
@@ -106,14 +125,14 @@ func processStateAlive(delta: float):
 	setZIndex();
 	setDirection();
 	setAnimation();
-	if Input.is_action_pressed(GlobalVariables.dashInput) && canDash:
+	if Input.is_action_pressed(DashInput) && canDash:
 		dash();
 	if outsideOfPlatform:
 		switchStateToFalling();
 
 func processStateFalling(delta: float):
 	setDirection();
-	if Input.is_action_pressed(GlobalVariables.dashInput) && canDash:
+	if Input.is_action_pressed(DashInput) && canDash:
 		dash();
 	direction = Vector2.ZERO;
 	animationSprite.scale *= (1 - delta) * scaleDownMultiplier;
@@ -126,24 +145,28 @@ func processStateDashing(delta: float):
 
 func processStateBeingPushed(delta: float):
 	setZIndex();
-	if Input.is_action_pressed(GlobalVariables.dashInput) && canDash:
+	if Input.is_action_pressed(DashInput) && canDash:
 		dash();
 
 func physicsProcessStateAlive(delta: float):
-	var col : KinematicCollision2D = move_and_collide(direction.normalized() * speed * delta);
-	if col != null: 
-		if col.collider.has_method(GlobalVariables.collidedWithOtherPlayerMethod) && col.collider.has_method(GlobalVariables.isDashingMethod):
-			var push = (col.remainder * -10) + col.collider_velocity;
-			col.collider.call(GlobalVariables.collidedWithOtherPlayerMethod, col.remainder);
-			pushDirection = col.remainder * -1;
-			pushedFromDash = col.collider.call(GlobalVariables.isDashingMethod);
+	var collision : KinematicCollision2D = move_and_collide(direction.normalized() * speed * delta);
+	if collision != null: 
+		if collision.collider.has_method(GlobalVariables.methodCollidedWithOtherPlayer) && collision.collider.has_method(GlobalVariables.methodIsDashing):
+			pushDirection = collision.remainder * -1;
+			pushedFromDash = collision.collider.call(GlobalVariables.methodIsDashing);
 			switchStateToBeingPushed();
+			collision.collider.call(GlobalVariables.methodCollidedWithOtherPlayer, collision.remainder);
 
 func physicsProcessStateDashing(delta: float):
-	var col = move_and_collide(dashDirection.normalized() * dashMultiplier * delta);
-	if col != null:
-		if col.collider.has_method(GlobalVariables.collidedWithOtherPlayerMethod):
-			col.collider.call(GlobalVariables.collidedWithOtherPlayerMethod, col.remainder, true);
+	var collision = move_and_collide(dashDirection.normalized() * dashMultiplier * delta);
+	if collision != null:
+		if collision.collider.has_method(GlobalVariables.methodCollidedWithOtherPlayer) && collision.collider.has_method(GlobalVariables.methodIsDashing):
+			var isDashing : bool = collision.collider.call(GlobalVariables.methodIsDashing);
+			if isDashing:
+				pushDirection = collision.remainder * -1;
+				pushedFromDash = isDashing;
+				switchStateToBeingPushed();
+			collision.collider.call(GlobalVariables.methodCollidedWithOtherPlayer, collision.remainder, true);
 
 func physicsProcessStateBeingPushed(delta: float):
 	move_and_collide(pushDirection.normalized() * (GlobalVariables.PushBackFromTouchkMultiplier if !pushedFromDash else GlobalVariables.PushBackFromDashMultiplier) * delta);
@@ -153,13 +176,13 @@ func setZIndex():
 
 func setDirection():
 	direction = Vector2();
-	if Input.is_action_pressed(GlobalVariables.uiRightInput):
+	if Input.is_action_pressed(RightInput):
 		direction.x += 1;
-	if Input.is_action_pressed(GlobalVariables.uiLeftInput):
+	if Input.is_action_pressed(LeftInput):
 		direction.x -= 1;
-	if Input.is_action_pressed(GlobalVariables.uiDownInput):
+	if Input.is_action_pressed(DownInput):
 		direction.y += 1;
-	if Input.is_action_pressed(GlobalVariables.uiUpInput):
+	if Input.is_action_pressed(UpInput):
 		direction.y -= 1;
 
 func setAnimation():

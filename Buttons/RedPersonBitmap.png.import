@@ -1,0 +1,15 @@
+[remap]
+
+importer="bitmap"
+type="BitMap"
+path="res://.import/RedPersonBitmap.png-5dcb9849d6ddbdc4ce356ba04c440cb7.res"
+
+[deps]
+
+source_file="res://Buttons/RedPersonBitmap.png"
+dest_files=[ "res://.import/RedPersonBitmap.png-5dcb9849d6ddbdc4ce356ba04c440cb7.res" ]
+
+[params]
+
+create_from=1
+threshold=0.5

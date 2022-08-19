@@ -1,0 +1,197 @@
+[gd_scene load_steps=28 format=2]
+
+[ext_resource path="res://RawAssets/Panque.png" type="Texture" id=1]
+[ext_resource path="res://Fonts/DoubleHomicide.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://Scripts/CameraMainMenu.gd" type="Script" id=3]
+[ext_resource path="res://Scripts/GameMenu.gd" type="Script" id=4]
+[ext_resource path="res://Buttons/RedPersonBitmap.png" type="BitMap" id=5]
+[ext_resource path="res://Buttons/RedPersonHighlight.png" type="Texture" id=6]
+[ext_resource path="res://Buttons/RedPerson.png" type="Texture" id=7]
+[ext_resource path="res://Buttons/GreenPersonBitmap.png" type="BitMap" id=8]
+[ext_resource path="res://Buttons/GreenPerson.png" type="Texture" id=9]
+[ext_resource path="res://Buttons/GreenPersonHighlight.png" type="Texture" id=10]
+[ext_resource path="res://Buttons/ReturnWhite.png" type="Texture" id=11]
+[ext_resource path="res://Buttons/ReturnGrey.png" type="Texture" id=12]
+
+[sub_resource type="DynamicFontData" id=3]
+font_path = "res://Fonts/DoubleHomicide.ttf"
+
+[sub_resource type="DynamicFont" id=2]
+size = 104
+outline_color = Color( 1, 0.945098, 0.909804, 1 )
+font_data = SubResource( 3 )
+
+[sub_resource type="DynamicFont" id=4]
+size = 104
+outline_color = Color( 0.760784, 0.764706, 0.780392, 1 )
+font_data = ExtResource( 2 )
+
+[sub_resource type="StyleBoxEmpty" id=5]
+
+[sub_resource type="StyleBoxEmpty" id=7]
+
+[sub_resource type="StyleBoxEmpty" id=8]
+
+[sub_resource type="StyleBoxEmpty" id=9]
+
+[sub_resource type="StyleBoxEmpty" id=6]
+
+[sub_resource type="DynamicFont" id=10]
+size = 104
+outline_color = Color( 0.760784, 0.764706, 0.780392, 1 )
+font_data = ExtResource( 2 )
+
+[sub_resource type="StyleBoxEmpty" id=11]
+
+[sub_resource type="StyleBoxEmpty" id=12]
+
+[sub_resource type="StyleBoxEmpty" id=13]
+
+[sub_resource type="StyleBoxEmpty" id=14]
+
+[sub_resource type="StyleBoxEmpty" id=15]
+
+[sub_resource type="DynamicFont" id=16]
+size = 104
+font_data = ExtResource( 2 )
+
+[node name="MainMenu" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 4 )
+
+[node name="Background" type="TextureRect" parent="."]
+margin_right = 1600.0
+margin_bottom = 960.0
+texture = ExtResource( 1 )
+expand = true
+
+[node name="GameTitle" type="Label" parent="."]
+margin_left = 1048.0
+margin_top = 26.0
+margin_right = 1600.0
+margin_bottom = 300.0
+custom_colors/font_color = Color( 1, 0.945098, 0.909804, 1 )
+custom_colors/font_color_shadow = Color( 0.494118, 0.145098, 0.32549, 1 )
+custom_constants/shadow_offset_x = 2
+custom_constants/line_spacing = -25
+custom_constants/shadow_offset_y = 3
+custom_constants/shadow_as_outline = 0
+custom_fonts/font = SubResource( 2 )
+text = "Wannabe
+Punk Game"
+align = 1
+valign = 1
+
+[node name="StartButton" type="Button" parent="."]
+margin_left = 1176.0
+margin_top = 398.0
+margin_right = 1472.0
+margin_bottom = 502.0
+custom_colors/font_color_disabled = Color( 0.513726, 0.462745, 0.611765, 1 )
+custom_colors/font_color_focus = Color( 1, 0.945098, 0.909804, 1 )
+custom_colors/font_color = Color( 1, 0.945098, 0.909804, 1 )
+custom_colors/font_color_hover = Color( 0.160784, 0.678431, 1, 1 )
+custom_colors/font_color_pressed = Color( 1, 0, 0.301961, 1 )
+custom_fonts/font = SubResource( 4 )
+custom_styles/hover = SubResource( 5 )
+custom_styles/pressed = SubResource( 7 )
+custom_styles/focus = SubResource( 8 )
+custom_styles/disabled = SubResource( 9 )
+custom_styles/normal = SubResource( 6 )
+text = "Start"
+
+[node name="ShadowText" type="Label" parent="StartButton"]
+show_behind_parent = true
+anchor_right = 1.306
+anchor_bottom = 1.491
+margin_left = 55.0
+margin_top = 3.0
+margin_right = -141.576
+margin_bottom = -48.064
+custom_constants/shadow_offset_x = 2
+custom_constants/line_spacing = -25
+custom_constants/shadow_offset_y = 3
+custom_constants/shadow_as_outline = 0
+custom_fonts/font = SubResource( 2 )
+text = "Start"
+align = 1
+valign = 1
+
+[node name="ExitButton" type="Button" parent="."]
+margin_left = 1156.0
+margin_top = 487.0
+margin_right = 1494.0
+margin_bottom = 646.0
+custom_colors/font_color_disabled = Color( 0.513726, 0.462745, 0.611765, 1 )
+custom_colors/font_color_focus = Color( 1, 0.945098, 0.909804, 1 )
+custom_colors/font_color = Color( 1, 0.945098, 0.909804, 1 )
+custom_colors/font_color_hover = Color( 1, 0, 0.301961, 1 )
+custom_colors/font_color_pressed = Color( 0.160784, 0.678431, 1, 1 )
+custom_fonts/font = SubResource( 10 )
+custom_styles/hover = SubResource( 11 )
+custom_styles/pressed = SubResource( 12 )
+custom_styles/focus = SubResource( 13 )
+custom_styles/disabled = SubResource( 14 )
+custom_styles/normal = SubResource( 15 )
+text = "Quit"
+
+[node name="ShadowText" type="Label" parent="ExitButton"]
+show_behind_parent = true
+margin_left = 98.0
+margin_top = 30.0
+margin_right = 243.0
+margin_bottom = 134.0
+custom_fonts/font = SubResource( 16 )
+text = "Quit"
+
+[node name="ReturnButton" type="TextureButton" parent="."]
+margin_left = 784.0
+margin_top = 245.0
+margin_right = 824.0
+margin_bottom = 285.0
+texture_normal = ExtResource( 12 )
+texture_hover = ExtResource( 11 )
+texture_focused = ExtResource( 11 )
+expand = true
+
+[node name="RedCharacterButton" type="TextureButton" parent="."]
+margin_left = 495.0
+margin_top = 234.0
+margin_right = 640.0
+margin_bottom = 501.0
+texture_normal = ExtResource( 7 )
+texture_hover = ExtResource( 6 )
+texture_disabled = ExtResource( 7 )
+texture_click_mask = ExtResource( 5 )
+expand = true
+
+[node name="GreenCharacterButton" type="TextureButton" parent="."]
+margin_left = 595.0
+margin_top = 288.0
+margin_right = 775.0
+margin_bottom = 524.0
+texture_normal = ExtResource( 9 )
+texture_hover = ExtResource( 10 )
+texture_disabled = ExtResource( 9 )
+texture_click_mask = ExtResource( 8 )
+expand = true
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2( 800, 480 )
+current = true
+script = ExtResource( 3 )
+EndZoom = Vector2( 0.3, 0.3 )
+
+[connection signal="mouse_entered" from="StartButton" to="." method="_on_StartButton_mouse_entered"]
+[connection signal="mouse_exited" from="StartButton" to="." method="_on_StartButton_mouse_exited"]
+[connection signal="pressed" from="StartButton" to="Camera2D" method="_on_StartButton_pressed"]
+[connection signal="mouse_entered" from="ExitButton" to="." method="_on_ExitButton_mouse_entered"]
+[connection signal="mouse_exited" from="ExitButton" to="." method="_on_ExitButton_mouse_exited"]
+[connection signal="pressed" from="ExitButton" to="." method="_on_ExitButton_pressed"]
+[connection signal="pressed" from="ReturnButton" to="." method="_on_ReturnButton_pressed"]
+[connection signal="pressed" from="ReturnButton" to="Camera2D" method="_on_ReturnButton_pressed"]
+[connection signal="pressed" from="RedCharacterButton" to="." method="_on_RedCharacterButton_pressed"]
+[connection signal="pressed" from="GreenCharacterButton" to="." method="_on_GreenCharacterButton_pressed"]
+[connection signal="zooming_in_complete" from="Camera2D" to="." method="_on_Camera2D_zooming_in_complete"]
+[connection signal="zooming_out_complete" from="Camera2D" to="." method="_on_Camera2D_zooming_out_complete"]

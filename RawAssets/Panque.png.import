@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/TileMap.png-c04c902eee3536419a11798c04976388.stex"
+path="res://.import/Panque.png-3ff45de63e2acdf8a2246e3d75c933c0.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/TileMap.png"
-dest_files=[ "res://.import/TileMap.png-c04c902eee3536419a11798c04976388.stex" ]
+source_file="res://RawAssets/Panque.png"
+dest_files=[ "res://.import/Panque.png-3ff45de63e2acdf8a2246e3d75c933c0.stex" ]
 
 [params]
 
