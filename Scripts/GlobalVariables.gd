@@ -7,13 +7,16 @@ var PushBackFromDashMultiplier: float = 120;
 var BeingPushedTime: float = .15; #! Some of those can(should?) be moved to the player script, for more customization &&/|| different attributes/skills for each character
 var dashingTime: float = .2;
 var fallingTimeBeforeDeath: float = 2;
-var zIndexInFront : int = 3;
-var zIndexInBehind : int = 2;
-var zIndexInFalling : int = 1;
+var zIndexWhenInFront : int = 3;
+var zIndexWhenBehind : int = 2;
+var zIndexWhenFalling : int = 1;
 
-enum Characters {Green, Red, Yellow};
-var Player0;
-var Player1;
+enum Characters { Green, Red, Yellow };
+enum PlayerInput { Player0, Player1 };
+var CharacterPicked = Characters.Green;
+
+var Player0 : KinematicBody2D;
+var Player1 : KinematicBody2D;
 
 #Input String Names:
 const P0_DashInput : String = "P0_Dash";
@@ -34,11 +37,14 @@ const idleAnim : String = "idle";
 const movingAnim : String = "moving";
 const fallingAnim : String = "falling";
 
-#Method String Names:
-const methodCollidedWithOtherPlayer : String = "collided_with_other_player";
-const methodIsDashing : String = "isDashing"
-const methodSetExternalAttributes : String = "setExternalAttributes";
+#Methods/Signals String Names:
+const methodCollidedWithOtherPlayer : String = "collidedWithOtherPlayer";
+const methodIsDashing : String = "isDashing";
+const methodIsFalling : String = "isFalling";
+const methodreceiveInitParams : String = "receiveInitParams";
 const methodGameStart : String = "gameStart";
+const methodGameEnd : String = "gameEnd";
+const signalPlayerHasDied : String = "player_has_died";
 
 #Pallete Colors:
 const White : Color = Color("#FFF1E8");
@@ -51,25 +57,3 @@ const DarkGreen : Color = Color("#008751");
 const LightGrey : Color = Color("#C2C3C7");
 const LightGreen : Color = Color("#00E436");
 const LightBlue : Color = Color("#29ADFF");
-
-class PlayerAttributes:
-	var DashInput : String;
-	var RightInput : String;
-	var LeftInput : String;
-	var DownInput : String;
-	var UpInput : String;
-	var InitialPos : Vector2;
-	var SpriteFrame : SpriteFrames; 
-	var OtherPlayerNode : KinematicBody2D;
-	var shouldFlipSprite : bool;
-	
-	func _custom_init(DashInput : String, RightInput : String, LeftInput : String, DownInput : String, UpInput : String, InitialPos : Vector2, SpriteFrame : SpriteFrames, OtherPlayerNode : KinematicBody2D, shouldFlipSprite):
-		self.DashInput = DashInput;
-		self.RightInput = RightInput;
-		self.LeftInput = LeftInput;
-		self.DownInput = DownInput;
-		self.UpInput = UpInput;
-		self.InitialPos = InitialPos;
-		self.SpriteFrame = SpriteFrame;
-		self.OtherPlayerNode = OtherPlayerNode;
-		self.shouldFlipSprite = shouldFlipSprite;

@@ -44,11 +44,9 @@ func _on_ReturnButton_pressed():
 	returnButton.visible = false;
 
 func _on_GreenCharacterButton_pressed():
-	GlobalVariables.Player0 = GlobalVariables.Characters.Green;
-	GlobalVariables.Player1 = GlobalVariables.Characters.Red; #when there's more characters, we could randomize
+	GlobalVariables.CharacterPicked = GlobalVariables.Characters.Green;
 	SceneSwitcher.goToScene(GlobalVariables.GameScenes.Game);
 
 func _on_RedCharacterButton_pressed():
-	GlobalVariables.Player0 = GlobalVariables.Characters.Red;
-	GlobalVariables.Player1 = GlobalVariables.Characters.Green;
+	GlobalVariables.CharacterPicked = GlobalVariables.Characters.Red;
 	SceneSwitcher.goToScene(GlobalVariables.GameScenes.Game);
