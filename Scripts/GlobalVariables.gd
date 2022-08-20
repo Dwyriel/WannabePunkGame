@@ -11,9 +11,12 @@ var zIndexInFront : int = 3;
 var zIndexInBehind : int = 2;
 var zIndexInFalling : int = 1;
 
-enum Characters {Green, Red, Yellow};
-var Player0;
-var Player1;
+enum Characters { Green, Red, Yellow };
+enum PlayerInput { Player0, Player1 };
+var CharacterPicked = Characters.Green;
+
+var Player0 : KinematicBody2D;
+var Player1 : KinematicBody2D;
 
 #Input String Names:
 const P0_DashInput : String = "P0_Dash";
@@ -35,9 +38,9 @@ const movingAnim : String = "moving";
 const fallingAnim : String = "falling";
 
 #Method String Names:
-const methodCollidedWithOtherPlayer : String = "collided_with_other_player";
+const methodCollidedWithOtherPlayer : String = "collidedWithOtherPlayer";
 const methodIsDashing : String = "isDashing"
-const methodSetExternalAttributes : String = "setExternalAttributes";
+const methodreceiveInitParams : String = "receiveInitParams";
 const methodGameStart : String = "gameStart";
 
 #Pallete Colors:

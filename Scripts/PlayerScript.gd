@@ -9,8 +9,14 @@ export(float) var interpolationSpeed: float = .4;
 #Local Attributes
 enum States { NotActive, Dead, Alive, Falling, Dashing, BeingPushed };
 var CurrentState = States.NotActive;
+var DashInput : String;
+var RightInput : String;
+var LeftInput : String;
+var DownInput : String;
+var UpInput : String;
 var animationSprite : AnimatedSprite;
 var PlayerCollider: CollisionShape2D;
+var otherPlayerNode: KinematicBody2D;
 var timer : Timer;
 var fallingTimer : Timer;
 var dashCooldownTimer : Timer;
@@ -23,12 +29,8 @@ var pushedFromDash: bool = false;
 var interpolation = 0;
 
 #External Attributes (Comes from some other script)
-var DashInput : String;
-var RightInput : String;
-var LeftInput : String;
-var DownInput : String;
-var UpInput : String;
-var otherPlayerNode: KinematicBody2D;
+var character;
+var playerInput;
 
 #Godot Functions
 func _ready():
@@ -37,6 +39,9 @@ func _ready():
 	timer = $Timer;
 	fallingTimer = $FallingTimer;
 	dashCooldownTimer = $DashCooldownTimer;
+	setPlayerInput();
+	setCharacterSprite();
+	otherPlayerNode = GlobalVariables.Player0 if playerInput == GlobalVariables.PlayerInput.Player1 else GlobalVariables.Player1;
 	PlayerCollider.disabled = false;
 	animationSprite.animation = GlobalVariables.idleAnim;
 	animationSprite.play();
@@ -89,7 +94,7 @@ func _on_Timer_timeout():
 	validadePosition();
 
 #"Public" Functions (called from outside)
-func collided_with_other_player(vec2 : Vector2, isDashing = false):
+func collidedWithOtherPlayer(vec2 : Vector2, isDashing = false):
 	match CurrentState:
 		States.Dashing:
 			if !isDashing:
@@ -104,21 +109,33 @@ func collided_with_other_player(vec2 : Vector2, isDashing = false):
 func isDashing():
 	return CurrentState == States.Dashing;
 
-func setExternalAttributes(attributes: GlobalVariables.PlayerAttributes):
-	DashInput = attributes.DashInput;
-	RightInput = attributes.RightInput;
-	LeftInput = attributes.LeftInput;
-	DownInput = attributes.DownInput;
-	UpInput = attributes.UpInput;
-	self.position = attributes.InitialPos;
-	$AnimatedSprite.frames = attributes.SpriteFrame; #needs to be set directly, as the variable "animatedSprite" is still null at this point
-	otherPlayerNode = attributes.OtherPlayerNode;
-	$AnimatedSprite.flip_h = attributes.shouldFlipSprite;
+func receiveInitParams(l_character, l_playerInput):
+	self.character = l_character;
+	self.playerInput = l_playerInput;
 
 func gameStart():
 	switchStateToAlive();
 
 #Functions
+func setCharacterSprite():
+	animationSprite.frames = GlobalPreloads.SpriteFrameGreen if character == GlobalVariables.Characters.Green else GlobalPreloads.SpriteFrameRed;
+	animationSprite.flip_h = self.position.x >= 0;
+
+func setPlayerInput():
+	match playerInput:
+		GlobalVariables.PlayerInput.Player0:
+			DashInput = GlobalVariables.P0_DashInput;
+			RightInput = GlobalVariables.P0_RightInput;
+			LeftInput = GlobalVariables.P0_LeftInput;
+			DownInput = GlobalVariables.P0_DownInput;
+			UpInput = GlobalVariables.P0_UpInput;
+		GlobalVariables.PlayerInput.Player1:
+			DashInput = GlobalVariables.P1_DashInput;
+			RightInput = GlobalVariables.P1_RightInput;
+			LeftInput = GlobalVariables.P1_LeftInput;
+			DownInput = GlobalVariables.P1_DownInput;
+			UpInput = GlobalVariables.P1_UpInput;
+
 func validadePosition():
 	if outsideOfPlatform:
 		switchStateToFalling();
