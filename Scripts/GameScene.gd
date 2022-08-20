@@ -1,10 +1,19 @@
 extends Node2D
 
+#Exports Attributes
 export var timeBeforeGoTime : int = 3; 
 export var labelFadeSpeed : float = 1.5;
 export var timeBeforeHideCountdownLabel : float = .8;
 export var drawWaitTime : float = 2;
+export var timeBeforeReturningToMenu = 5;
+export var gameOverLabelStartScale : Vector2 = Vector2(.5, .5);
+export var gameOverLabelEndScale : Vector2 = Vector2.ONE;
+export var gameOverLabelStartTransparency : float = 0;
+export var gameOverLabelEndTransparency : float = 1;
+export var scaleInterpolationSpeed : float = .15;
+export var transparencyInterpolationSpeed : float = .5;
 
+#Local Attributes
 enum Results { Player0Won, Player1Won, Draw };
 var result : int = -1;
 var Player0Pos : Vector2;
@@ -16,6 +25,8 @@ var gameOverLabel : Label;
 var gameOverNode : Node;
 var player0HasDied : bool = false;
 var player1HasDied : bool = false;
+var scaleInterporlation : float = 0;
+var transparencyInterporlation : float = 0;
 
 func _ready():
 	GlobalVariables.currentGameScene = GlobalVariables.GameScenes.Game;
@@ -63,7 +74,13 @@ func _process(delta):
 			(GlobalVariables.Player0 if result == Results.Player0Won else GlobalVariables.Player1).call(GlobalVariables.methodGameEnd);
 			return;
 	else:
-		return;
+		timeBeforeReturningToMenu -= delta;
+		if timeBeforeReturningToMenu <= 0:
+			SceneSwitcher.goToScene(GlobalVariables.GameScenes.Menu);
+		scaleInterporlation += delta * scaleInterpolationSpeed;
+		transparencyInterporlation += delta * transparencyInterpolationSpeed;
+		gameOverLabel.modulate.a = clamp(gameOverLabelStartTransparency + (gameOverLabelEndTransparency - gameOverLabelStartTransparency) * transparencyInterporlation, gameOverLabelStartTransparency, gameOverLabelEndTransparency);
+		gameOverNode.scale = gameOverLabelStartScale.linear_interpolate(gameOverLabelEndScale, scaleInterporlation);
 
 func _physics_process(delta):#Only being used for adding transparency to CountdownLabel for now, change it if needed to be use for other stuff
 	countdownLabel.modulate.a -= labelFadeSpeed * delta;
@@ -108,3 +125,5 @@ func showGameOverCountdown():
 			gameOverLabel.text = GlobalVariables.Player0.name.to_upper() + "\nWINS";
 		Results.Player1Won:
 			gameOverLabel.text = GlobalVariables.Player1.name.to_upper() + "\nWINS";
+	gameOverLabel.modulate.a = gameOverLabelStartTransparency;
+	gameOverNode.scale = gameOverLabelStartScale
