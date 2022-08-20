@@ -425,7 +425,10 @@ position = Vector2( 24, -8 )
 [node name="Timer" type="Timer" parent="."]
 one_shot = true
 
-[node name="CountdownLabel" type="Label" parent="."]
+[node name="CountdownNode" type="Node2D" parent="."]
+z_index = 4
+
+[node name="CountdownLabel" type="Label" parent="CountdownNode"]
 visible = false
 margin_left = -239.0
 margin_top = -135.0

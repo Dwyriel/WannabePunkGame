@@ -7,9 +7,9 @@ var PushBackFromDashMultiplier: float = 120;
 var BeingPushedTime: float = .15; #! Some of those can(should?) be moved to the player script, for more customization &&/|| different attributes/skills for each character
 var dashingTime: float = .2;
 var fallingTimeBeforeDeath: float = 2;
-var zIndexInFront : int = 3;
-var zIndexInBehind : int = 2;
-var zIndexInFalling : int = 1;
+var zIndexWhenInFront : int = 3;
+var zIndexWhenBehind : int = 2;
+var zIndexWhenFalling : int = 1;
 
 enum Characters { Green, Red, Yellow };
 enum PlayerInput { Player0, Player1 };

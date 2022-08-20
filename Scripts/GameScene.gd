@@ -1,6 +1,8 @@
 extends Node2D
 
 export var timeBeforeGoTime : int = 3; 
+export var labelFadeSpeed : float = 1.5;
+export var timeBeforeHideLabel : float = .8;
 
 var Player0Pos : Vector2;
 var Player1Pos : Vector2;
@@ -13,7 +15,7 @@ func _ready():
 	Player0Pos = $SpawnPoint1.position; #Offset accounted for in the spawnpoint itself
 	Player1Pos = $SpawnPoint2.position + Vector2(0, -8); #Accounting for offset here
 	timer = $Timer;
-	countdownLabel = $CountdownLabel;
+	countdownLabel = $CountdownNode.get_node("CountdownLabel");
 	countdownLabel.show();
 	countdownLabel.text = String(timeBeforeGoTime);
 	LoadPlayer();
@@ -31,7 +33,7 @@ func LoadPlayer():
 	self.add_child_below_node(get_child(1), GlobalVariables.Player1);
 
 func _physics_process(delta):#Only being used for adding transparency to CountdownLabel for now, change it if needed to be use for other stuff
-	countdownLabel.modulate.a -= 1.5 * delta;
+	countdownLabel.modulate.a -= labelFadeSpeed * delta;
 
 func _on_Timer_timeout():
 	if goTimeEnded:
@@ -48,4 +50,4 @@ func _on_Timer_timeout():
 		GlobalVariables.Player0.call(GlobalVariables.methodGameStart);
 		GlobalVariables.Player1.call(GlobalVariables.methodGameStart);
 		goTimeEnded = true;
-		timer.start(.8);
+		timer.start(timeBeforeHideLabel);

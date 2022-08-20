@@ -194,7 +194,7 @@ func physicsProcessStateBeingPushed(delta: float):
 	move_and_collide(pushDirection.normalized() * (GlobalVariables.PushBackFromTouchkMultiplier if !pushedFromDash else GlobalVariables.PushBackFromDashMultiplier) * delta);
 
 func setZIndex():
-	self.z_index = GlobalVariables.zIndexInFront if position.y > otherPlayerNode.position.y else GlobalVariables.zIndexInBehind;
+	self.z_index = GlobalVariables.zIndexWhenInFront if position.y > otherPlayerNode.position.y else GlobalVariables.zIndexWhenBehind;
 
 func setDirection():
 	direction = Vector2();
@@ -228,7 +228,7 @@ func dash():
 func switchStateToFalling():
 	CurrentState = States.Falling;
 	PlayerCollider.disabled = true;
-	self.z_index = GlobalVariables.zIndexInFalling;
+	self.z_index = GlobalVariables.zIndexWhenFalling;
 	animationSprite.animation = GlobalVariables.fallingAnim;
 	fallingTimer.start(GlobalVariables.fallingTimeBeforeDeath);
 
