@@ -4,8 +4,7 @@ extends KinematicBody2D;
 export(int) var speed : int;
 export(int) var dashMultiplier : int;
 export(float) var dashCooldown : float;
-export(float) var scaleDownMultiplier: float;
-export(float) var scaleDownOffset: float;
+export(float) var interpolationSpeed: float = .4;
 
 #Local Attributes
 enum States { NotActive, Dead, Alive, Falling, Dashing, BeingPushed };
@@ -21,6 +20,7 @@ var pushDirection: Vector2 = Vector2.ZERO;
 var canDash : bool = true;
 var outsideOfPlatform : bool = false;
 var pushedFromDash: bool = false;
+var interpolation = 0;
 
 #External Attributes (Comes from some other script)
 var DashInput : String;
@@ -139,8 +139,9 @@ func processStateFalling(delta: float):
 	if Input.is_action_pressed(DashInput) && canDash:
 		dash();
 	direction = Vector2.ZERO;
-	animationSprite.scale *= (1 - delta) * scaleDownMultiplier;
-	animationSprite.offset.y += delta * scaleDownOffset;
+	interpolation += interpolationSpeed * delta;
+	animationSprite.scale = Vector2.ONE.linear_interpolate(Vector2.ZERO, interpolation);
+	animationSprite.position.y = 0 + 8 * interpolation; # 0 is the default and 8 is half the amount of pixels one tile and the sprite have.
 	if !outsideOfPlatform:
 		switchStateToAlive();
 
@@ -220,7 +221,8 @@ func switchStateToAlive():
 		fallingTimer.stop();
 	PlayerCollider.disabled = false;
 	animationSprite.scale = Vector2.ONE;
-	animationSprite.offset.y = 0;
+	animationSprite.position.y = 0;
+	interpolation = 0;
 
 func switchStateToDashing():
 	CurrentState = States.Dashing;

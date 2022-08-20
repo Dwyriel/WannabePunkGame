@@ -15,8 +15,6 @@ script = ExtResource( 1 )
 speed = 60
 dashMultiplier = 150
 dashCooldown = 2.0
-scaleDownMultiplier = 1.003
-scaleDownOffset = 9.0
 
 [node name="PlayerFeetCollider" type="CollisionShape2D" parent="."]
 position = Vector2( 0.5, 6.5 )
