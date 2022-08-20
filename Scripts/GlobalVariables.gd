@@ -38,6 +38,7 @@ const fallingAnim : String = "falling";
 const methodCollidedWithOtherPlayer : String = "collided_with_other_player";
 const methodIsDashing : String = "isDashing"
 const methodSetExternalAttributes : String = "setExternalAttributes";
+const methodGameStart : String = "gameStart";
 
 #Pallete Colors:
 const White : Color = Color("#FFF1E8");

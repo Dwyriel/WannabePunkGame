@@ -8,8 +8,8 @@ export(float) var scaleDownMultiplier: float;
 export(float) var scaleDownOffset: float;
 
 #Local Attributes
-enum States { Dead, Alive, Falling, Dashing, BeingPushed };
-var CurrentState = States.Alive;
+enum States { NotActive, Dead, Alive, Falling, Dashing, BeingPushed };
+var CurrentState = States.NotActive;
 var animationSprite : AnimatedSprite;
 var PlayerCollider: CollisionShape2D;
 var timer : Timer;
@@ -88,6 +88,7 @@ func _on_DashCooldownTimer_timeout():
 func _on_Timer_timeout():
 	validadePosition();
 
+#"Public" Functions (called from outside)
 func collided_with_other_player(vec2 : Vector2, isDashing = false):
 	match CurrentState:
 		States.Dashing:
@@ -103,7 +104,6 @@ func collided_with_other_player(vec2 : Vector2, isDashing = false):
 func isDashing():
 	return CurrentState == States.Dashing;
 
-#Functions
 func setExternalAttributes(attributes: GlobalVariables.PlayerAttributes):
 	DashInput = attributes.DashInput;
 	RightInput = attributes.RightInput;
@@ -115,6 +115,10 @@ func setExternalAttributes(attributes: GlobalVariables.PlayerAttributes):
 	otherPlayerNode = attributes.OtherPlayerNode;
 	$AnimatedSprite.flip_h = attributes.shouldFlipSprite;
 
+func gameStart():
+	switchStateToAlive();
+
+#Functions
 func validadePosition():
 	if outsideOfPlatform:
 		switchStateToFalling();
