@@ -4,11 +4,12 @@ extends Camera2D
 signal zooming_in_complete;
 signal zooming_out_complete;
 
-#Consts
-export var StartPos : Vector2 = Vector2(800, 480);
-export var EndPos : Vector2 = Vector2(620, 360);
+#Exports
+export var StartPos : Vector2 = Vector2(800, 450);
+export var EndPos : Vector2 = Vector2(620, 340);
 export var  StartZoom : Vector2 = Vector2.ONE;
 export var EndZoom : Vector2 = Vector2(.28, .28);
+export var interpolationSpeed : float = 1;
 
 #Variables
 enum CamStates { Idle, ZoomingIn, ZoomingOut }; 
