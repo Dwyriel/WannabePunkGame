@@ -24,7 +24,7 @@ func _process(delta):
 		CamStates.Idle:
 			return;
 		CamStates.ZoomingIn:
-			interpolation += delta * 1;
+			interpolation += delta * interpolationSpeed;
 			self.position = StartPos.linear_interpolate(EndPos, interpolation);
 			self.zoom = StartZoom.linear_interpolate(EndZoom, interpolation);
 			if self.position.distance_to(EndPos) < 1:
@@ -33,7 +33,7 @@ func _process(delta):
 				emit_signal("zooming_in_complete");
 				switchToIdleState();
 		CamStates.ZoomingOut:
-			interpolation += delta * 1;
+			interpolation += delta * interpolationSpeed;
 			self.position = EndPos.linear_interpolate(StartPos, interpolation);
 			self.zoom = EndZoom.linear_interpolate(StartZoom, interpolation);
 			if self.position.distance_to(StartPos) < 1:

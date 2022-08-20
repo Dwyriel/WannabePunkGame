@@ -181,7 +181,6 @@ expand = true
 position = Vector2( 800, 450 )
 current = true
 script = ExtResource( 3 )
-EndZoom = Vector2( 0.3, 0.3 )
 
 [connection signal="mouse_entered" from="StartButton" to="." method="_on_StartButton_mouse_entered"]
 [connection signal="mouse_exited" from="StartButton" to="." method="_on_StartButton_mouse_exited"]
