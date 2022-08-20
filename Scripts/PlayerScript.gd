@@ -1,5 +1,8 @@
 extends KinematicBody2D;
 
+#Signals
+signal player_has_died;
+
 #Export Attributes
 export(int) var speed : int;
 export(int) var dashMultiplier : int;
@@ -14,7 +17,7 @@ var RightInput : String;
 var LeftInput : String;
 var DownInput : String;
 var UpInput : String;
-var animationSprite : AnimatedSprite;
+var animatedSprite : AnimatedSprite;
 var PlayerCollider: CollisionShape2D;
 var otherPlayerNode: KinematicBody2D;
 var timer : Timer;
@@ -35,16 +38,16 @@ var playerInput;
 #Godot Functions
 func _ready():
 	PlayerCollider = $PlayerFeetCollider;
-	animationSprite = $AnimatedSprite;
+	animatedSprite = $AnimatedSprite;
 	timer = $Timer;
 	fallingTimer = $FallingTimer;
 	dashCooldownTimer = $DashCooldownTimer;
 	setPlayerInput();
-	setCharacterSprite();
+	setCharacter();
 	otherPlayerNode = GlobalVariables.Player0 if playerInput == GlobalVariables.PlayerInput.Player1 else GlobalVariables.Player1;
 	PlayerCollider.disabled = false;
-	animationSprite.animation = GlobalVariables.idleAnim;
-	animationSprite.play();
+	animatedSprite.animation = GlobalVariables.idleAnim;
+	animatedSprite.play();
 
 func _process(delta):
 	match CurrentState:
@@ -109,6 +112,9 @@ func collidedWithOtherPlayer(vec2 : Vector2, isDashing = false):
 func isDashing():
 	return CurrentState == States.Dashing;
 
+func isFalling():
+	return CurrentState == States.Falling;
+
 func receiveInitParams(l_character, l_playerInput):
 	self.character = l_character;
 	self.playerInput = l_playerInput;
@@ -116,10 +122,14 @@ func receiveInitParams(l_character, l_playerInput):
 func gameStart():
 	switchStateToAlive();
 
+func gameEnd():
+	switchStateToNotActive();
+
 #Functions
-func setCharacterSprite():
-	animationSprite.frames = GlobalPreloads.SpriteFrameGreen if character == GlobalVariables.Characters.Green else GlobalPreloads.SpriteFrameRed;
-	animationSprite.flip_h = self.position.x >= 0;
+func setCharacter():
+	animatedSprite.frames = GlobalPreloads.SpriteFrameGreen if character == GlobalVariables.Characters.Green else GlobalPreloads.SpriteFrameRed;
+	animatedSprite.flip_h = self.position.x >= 0;
+	self.name = "Green" if character == GlobalVariables.Characters.Green else "Red" if character == GlobalVariables.Characters.Red else "Yellow";
 
 func setPlayerInput():
 	match playerInput:
@@ -157,8 +167,8 @@ func processStateFalling(delta: float):
 		dash();
 	direction = Vector2.ZERO;
 	interpolation += interpolationSpeed * delta;
-	animationSprite.scale = Vector2.ONE.linear_interpolate(Vector2.ZERO, interpolation);
-	animationSprite.position.y = 0 + 8 * interpolation; # 0 is the default and 8 is half the amount of pixels one tile and the sprite have.
+	animatedSprite.scale = Vector2.ONE.linear_interpolate(Vector2.ZERO, interpolation);
+	animatedSprite.position.y = 0 + 8 * interpolation; # 0 is the default and 8 is half the amount of pixels one tile and the sprite have.
 	if !outsideOfPlatform:
 		switchStateToAlive();
 
@@ -209,27 +219,27 @@ func setDirection():
 
 func setAnimation():
 	if direction.x != 0:
-		animationSprite.flip_h = direction.x < 0;
-		animationSprite.animation = GlobalVariables.movingAnim;
+		animatedSprite.flip_h = direction.x < 0;
+		animatedSprite.animation = GlobalVariables.movingAnim;
 	elif direction.y != 0:
-		animationSprite.animation = GlobalVariables.movingAnim;
+		animatedSprite.animation = GlobalVariables.movingAnim;
 	else:
-		animationSprite.animation = GlobalVariables.idleAnim;
+		animatedSprite.animation = GlobalVariables.idleAnim;
 
 func dash():
 		canDash = false;
 		dashCooldownTimer.start(dashCooldown);
 		dashDirection = direction;
 		if dashDirection.x == 0 && dashDirection.y == 0:
-			dashDirection.x = 1 if !animationSprite.flip_h else -1;
-		animationSprite.flip_h = dashDirection.x < 0;
+			dashDirection.x = 1 if !animatedSprite.flip_h else -1;
+		animatedSprite.flip_h = dashDirection.x < 0;
 		switchStateToDashing();
 
 func switchStateToFalling():
 	CurrentState = States.Falling;
 	PlayerCollider.disabled = true;
 	self.z_index = GlobalVariables.zIndexWhenFalling;
-	animationSprite.animation = GlobalVariables.fallingAnim;
+	animatedSprite.animation = GlobalVariables.fallingAnim;
 	fallingTimer.start(GlobalVariables.fallingTimeBeforeDeath);
 
 func switchStateToAlive():
@@ -237,24 +247,29 @@ func switchStateToAlive():
 	if !fallingTimer.is_stopped():
 		fallingTimer.stop();
 	PlayerCollider.disabled = false;
-	animationSprite.scale = Vector2.ONE;
-	animationSprite.position.y = 0;
+	animatedSprite.scale = Vector2.ONE;
+	animatedSprite.position.y = 0;
 	interpolation = 0;
 
 func switchStateToDashing():
 	CurrentState = States.Dashing;
 	PlayerCollider.disabled = false;
-	animationSprite.animation = GlobalVariables.dashingAnim;
+	animatedSprite.animation = GlobalVariables.dashingAnim;
 	timer.start(GlobalVariables.dashingTime);
 
 func switchStateToBeingPushed():
 	CurrentState = States.BeingPushed;
 	PlayerCollider.disabled = false;
-	animationSprite.animation = GlobalVariables.beingPushedAnim;
+	animatedSprite.animation = GlobalVariables.beingPushedAnim;
 	timer.start(GlobalVariables.BeingPushedTime);
 
 func switchStateToDead():
 	CurrentState = States.Dead;
 	direction = Vector2.ZERO;
-	animationSprite.hide();
+	animatedSprite.hide();
 	PlayerCollider.disabled = true;
+	emit_signal(GlobalVariables.signalPlayerHasDied);
+
+func switchStateToNotActive():
+	CurrentState = States.NotActive;
+	animatedSprite.animation = GlobalVariables.idleAnim;
