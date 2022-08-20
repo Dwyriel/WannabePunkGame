@@ -62,7 +62,7 @@ script = ExtResource( 4 )
 
 [node name="Background" type="TextureRect" parent="."]
 margin_right = 1600.0
-margin_bottom = 960.0
+margin_bottom = 900.0
 texture = ExtResource( 1 )
 expand = true
 
@@ -147,9 +147,9 @@ text = "Quit"
 
 [node name="ReturnButton" type="TextureButton" parent="."]
 margin_left = 784.0
-margin_top = 245.0
+margin_top = 235.0
 margin_right = 824.0
-margin_bottom = 285.0
+margin_bottom = 275.0
 texture_normal = ExtResource( 12 )
 texture_hover = ExtResource( 11 )
 texture_focused = ExtResource( 11 )
@@ -157,9 +157,9 @@ expand = true
 
 [node name="RedCharacterButton" type="TextureButton" parent="."]
 margin_left = 495.0
-margin_top = 234.0
+margin_top = 220.0
 margin_right = 640.0
-margin_bottom = 501.0
+margin_bottom = 470.0
 texture_normal = ExtResource( 7 )
 texture_hover = ExtResource( 6 )
 texture_disabled = ExtResource( 7 )
@@ -168,9 +168,9 @@ expand = true
 
 [node name="GreenCharacterButton" type="TextureButton" parent="."]
 margin_left = 595.0
-margin_top = 288.0
+margin_top = 270.0
 margin_right = 775.0
-margin_bottom = 524.0
+margin_bottom = 490.0
 texture_normal = ExtResource( 9 )
 texture_hover = ExtResource( 10 )
 texture_disabled = ExtResource( 9 )
@@ -178,10 +178,9 @@ texture_click_mask = ExtResource( 8 )
 expand = true
 
 [node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2( 800, 480 )
+position = Vector2( 800, 450 )
 current = true
 script = ExtResource( 3 )
-EndZoom = Vector2( 0.3, 0.3 )
 
 [connection signal="mouse_entered" from="StartButton" to="." method="_on_StartButton_mouse_entered"]
 [connection signal="mouse_exited" from="StartButton" to="." method="_on_StartButton_mouse_exited"]

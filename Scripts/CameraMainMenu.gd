@@ -4,11 +4,12 @@ extends Camera2D
 signal zooming_in_complete;
 signal zooming_out_complete;
 
-#Consts
-export var StartPos : Vector2 = Vector2(800, 480);
-export var EndPos : Vector2 = Vector2(620, 360);
+#Exports
+export var StartPos : Vector2 = Vector2(800, 450);
+export var EndPos : Vector2 = Vector2(620, 340);
 export var  StartZoom : Vector2 = Vector2.ONE;
 export var EndZoom : Vector2 = Vector2(.28, .28);
+export var interpolationSpeed : float = 1;
 
 #Variables
 enum CamStates { Idle, ZoomingIn, ZoomingOut }; 
@@ -23,7 +24,7 @@ func _process(delta):
 		CamStates.Idle:
 			return;
 		CamStates.ZoomingIn:
-			interpolation += delta * 1;
+			interpolation += delta * interpolationSpeed;
 			self.position = StartPos.linear_interpolate(EndPos, interpolation);
 			self.zoom = StartZoom.linear_interpolate(EndZoom, interpolation);
 			if self.position.distance_to(EndPos) < 1:
@@ -32,7 +33,7 @@ func _process(delta):
 				emit_signal("zooming_in_complete");
 				switchToIdleState();
 		CamStates.ZoomingOut:
-			interpolation += delta * 1;
+			interpolation += delta * interpolationSpeed;
 			self.position = EndPos.linear_interpolate(StartPos, interpolation);
 			self.zoom = EndZoom.linear_interpolate(StartZoom, interpolation);
 			if self.position.distance_to(StartPos) < 1:
