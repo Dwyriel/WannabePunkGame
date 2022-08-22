@@ -1,20 +1,22 @@
 extends Node
 
+#consts
+const PushBackFromTouchkMultiplier: float = 60.0;
+const PushBackFromDashMultiplier: float = 120.0;
+const BeingPushedTime: float = .15; #! Some of those can(should?) be moved to the player script, for more customization &&/|| different attributes/skills for each character
+const dashingTime: float = .2;
+const fallingTimeBeforeDeath: float = 2.0;
+const zIndexWhenInFront : int = 4;
+const zIndexWhenBehind : int = 2;
+const zIndexWhenFalling : int = 1;
+const DistanceMinPull : float = 30.0;
+const DistanceMaxPull : float = 70.0;
+
 enum GameScenes {Menu, Game}
 var currentGameScene;
-var PushBackFromTouchkMultiplier: float = 60;
-var PushBackFromDashMultiplier: float = 120;
-var BeingPushedTime: float = .15; #! Some of those can(should?) be moved to the player script, for more customization &&/|| different attributes/skills for each character
-var dashingTime: float = .2;
-var fallingTimeBeforeDeath: float = 2;
-var zIndexWhenInFront : int = 3;
-var zIndexWhenBehind : int = 2;
-var zIndexWhenFalling : int = 1;
-
 enum Characters { Green, Red, Yellow };
 enum PlayerInput { Player0, Player1 };
 var CharacterPicked = Characters.Green;
-
 var Player0 : KinematicBody2D;
 var Player1 : KinematicBody2D;
 
@@ -41,15 +43,18 @@ const fallingAnim : String = "falling";
 const methodCollidedWithOtherPlayer : String = "collidedWithOtherPlayer";
 const methodIsDashing : String = "isDashing";
 const methodIsFalling : String = "isFalling";
+const methodIsDead : String = "isDead";
 const methodreceiveInitParams : String = "receiveInitParams";
 const methodGameStart : String = "gameStart";
 const methodGameEnd : String = "gameEnd";
 const signalPlayerHasDied : String = "player_has_died";
+const signalPayersHaveBeenCreated : String = "playersHaveBeenCreated";
 
 #Pallete Colors:
 const White : Color = Color("#FFF1E8");
 const Black : Color = Color("#000000");
 const Purple : Color = Color("#7E2553");
+const Red : Color = Color("#FF004D");
 const Pink : Color = Color("#FF77A8");
 const Brown : Color = Color("#AB5236");
 const DarkBlue : Color = Color("#1D2B53");

@@ -1,5 +1,8 @@
 extends Node2D
 
+#Signals
+signal playersHaveBeenCreated;
+
 #Exports Attributes
 export var timeBeforeGoTime : int = 3; 
 export var labelFadeSpeed : float = 1.5;
@@ -58,6 +61,7 @@ func LoadPlayer():
 	GlobalVariables.Player1.connect(GlobalVariables.signalPlayerHasDied, self, "_on_Player1_Dead");
 	self.add_child_below_node(get_child(1), GlobalVariables.Player0);
 	self.add_child_below_node(get_child(1), GlobalVariables.Player1);
+	emit_signal(GlobalVariables.signalPayersHaveBeenCreated);
 
 func _process(delta):
 	if result == -1:

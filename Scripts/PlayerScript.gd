@@ -4,9 +4,10 @@ extends KinematicBody2D;
 signal player_has_died;
 
 #Export Attributes
-export(int) var speed : int;
-export(int) var dashMultiplier : int;
-export(float) var dashCooldown : float;
+export(int) var speed : int = 60;
+export(int) var dashMultiplier : int = 150;
+export(float) var dashCooldown : float = 2;
+export(float) var pullForce : float = 75;
 export(float) var interpolationSpeed: float = .4;
 
 #Local Attributes
@@ -78,6 +79,11 @@ func _on_Area2D_body_entered(body : Node):
 	if body.name != "TileMap":
 		return;
 	outsideOfPlatform = false;
+	animatedSprite.scale = Vector2.ONE;
+	animatedSprite.position.y = 0;
+	interpolation = 0;
+	if !fallingTimer.is_stopped():
+		fallingTimer.stop();
 
 func _on_Area2D_body_exited(body):
 	if body.name != "TileMap":
@@ -114,6 +120,9 @@ func isDashing():
 
 func isFalling():
 	return CurrentState == States.Falling;
+
+func isDead():
+	return CurrentState == States.Dead;
 
 func receiveInitParams(l_character, l_playerInput):
 	self.character = l_character;
@@ -182,6 +191,9 @@ func processStateBeingPushed(delta: float):
 
 func physicsProcessStateAlive(delta: float):
 	var collision : KinematicCollision2D = move_and_collide(direction.normalized() * speed * delta);
+	if collision == null && !otherPlayerNode.call(GlobalVariables.methodIsFalling) && !otherPlayerNode.call(GlobalVariables.methodIsDead):
+		var forceMultiplier : float = (clamp(self.position.distance_to(otherPlayerNode.position), GlobalVariables.DistanceMinPull, GlobalVariables.DistanceMaxPull) - GlobalVariables.DistanceMinPull) / (GlobalVariables.DistanceMaxPull - GlobalVariables.DistanceMinPull)
+		collision = move_and_collide((otherPlayerNode.position - self.position).normalized() * pullForce * forceMultiplier * delta);#shouldn't generate a collision, but still
 	if collision != null: 
 		if collision.collider.has_method(GlobalVariables.methodCollidedWithOtherPlayer) && collision.collider.has_method(GlobalVariables.methodIsDashing):
 			pushDirection = collision.remainder * -1;
@@ -240,7 +252,8 @@ func switchStateToFalling():
 	PlayerCollider.disabled = true;
 	self.z_index = GlobalVariables.zIndexWhenFalling;
 	animatedSprite.animation = GlobalVariables.fallingAnim;
-	fallingTimer.start(GlobalVariables.fallingTimeBeforeDeath);
+	if fallingTimer.is_stopped():
+		fallingTimer.start(GlobalVariables.fallingTimeBeforeDeath);
 
 func switchStateToAlive():
 	CurrentState = States.Alive;
