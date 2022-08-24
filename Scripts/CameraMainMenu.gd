@@ -26,7 +26,9 @@ func _process(delta):
 		CamStates.ZoomingIn:
 			interpolation += delta * interpolationSpeed;
 			self.position = StartPos.linear_interpolate(EndPos, interpolation);
+			self.position = Vector2(clamp(self.position.x, min(StartPos.x, EndPos.x), max(StartPos.x, EndPos.x)), clamp(self.position.y, min(StartPos.y, EndPos.y), max(StartPos.y, EndPos.y)));
 			self.zoom = StartZoom.linear_interpolate(EndZoom, interpolation);
+			self.zoom = Vector2(clamp(self.zoom.x, min(StartZoom.x, EndZoom.x), max(StartZoom.x, EndZoom.x)), clamp(self.zoom.y, min(StartZoom.y, EndZoom.y), max(StartZoom.y, EndZoom.y)));
 			if self.position.distance_to(EndPos) < 1:
 				self.position = EndPos;
 				self.zoom = EndZoom;
@@ -35,7 +37,9 @@ func _process(delta):
 		CamStates.ZoomingOut:
 			interpolation += delta * interpolationSpeed;
 			self.position = EndPos.linear_interpolate(StartPos, interpolation);
+			self.position = Vector2(clamp(self.position.x, min(StartPos.x, EndPos.x), max(StartPos.x, EndPos.x)), clamp(self.position.y, min(StartPos.y, EndPos.y), max(StartPos.y, EndPos.y)));
 			self.zoom = EndZoom.linear_interpolate(StartZoom, interpolation);
+			self.zoom = Vector2(clamp(self.zoom.x, min(StartZoom.x, EndZoom.x), max(StartZoom.x, EndZoom.x)), clamp(self.zoom.y, min(StartZoom.y, EndZoom.y), max(StartZoom.y, EndZoom.y)));
 			if self.position.distance_to(StartPos) < 1:
 				self.position = StartPos;
 				self.zoom = StartZoom;
