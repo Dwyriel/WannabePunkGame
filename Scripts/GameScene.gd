@@ -35,8 +35,8 @@ func _ready():
 	GlobalVariables.currentGameScene = GlobalVariables.GameScenes.Game;
 	set_physics_process(false);
 	set_process(false);
-	Player0Pos = $SpawnPoint1.position; #Offset accounted for in the spawnpoint itself
-	Player1Pos = $SpawnPoint2.position + Vector2(0, -8); #Accounting for offset here
+	Player0Pos = $SpawnPoint1.position;
+	Player1Pos = $SpawnPoint2.position;
 	timer = $Timer;
 	gameOverCountdownLabel = $LabelNode/GameOverCountdownLabel;
 	gameOverCountdownLabel.hide();
