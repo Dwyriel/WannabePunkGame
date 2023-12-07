@@ -94,7 +94,6 @@ func _on_FallingTimer_timeout():
 	if !outsideOfPlatform:
 		return;
 	switchStateToDead();
-	#TODO stuff when this happens (game over / X player wins / etc)
 
 func _on_DashCooldownTimer_timeout():
 	canDash = true;
