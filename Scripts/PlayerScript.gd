@@ -239,13 +239,13 @@ func setAnimation():
 		animatedSprite.animation = GlobalVariables.idleAnim;
 
 func dash():
-		canDash = false;
-		dashCooldownTimer.start(dashCooldown);
-		dashDirection = direction;
-		if dashDirection.x == 0 && dashDirection.y == 0:
-			dashDirection.x = 1 if !animatedSprite.flip_h else -1;
-		animatedSprite.flip_h = dashDirection.x < 0;
-		switchStateToDashing();
+	canDash = false;
+	dashCooldownTimer.start(dashCooldown);
+	dashDirection = direction;
+	if dashDirection.x == 0 && dashDirection.y == 0:
+		dashDirection.x = 1 if !animatedSprite.flip_h else -1;
+	animatedSprite.flip_h = dashDirection.x < 0;
+	switchStateToDashing();
 
 func switchStateToFalling():
 	CurrentState = States.Falling;
